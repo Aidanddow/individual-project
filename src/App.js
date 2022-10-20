@@ -1,7 +1,7 @@
 
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.css';
-import Repository from './Repository'
+import Repository from './pages/Repository'
 
 function App() {
   return (
@@ -10,7 +10,6 @@ function App() {
         <Repository />
       </header>
 
-      
     </div>
   );
 }

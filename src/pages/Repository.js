@@ -1,4 +1,6 @@
+
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom";
 
 export default function Repository () {
 
@@ -67,6 +69,7 @@ export default function Repository () {
         <div className="repo-info">
            
             <h1 className="title">Repository</h1>
+            <Link to="/">Home</Link>
             <h2 className="title">{repoInfo.name_with_namespace}</h2>
 
             <h3>Developers</h3>
