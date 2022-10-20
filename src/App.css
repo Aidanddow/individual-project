@@ -2,8 +2,12 @@ table, td, th {
     margin-left: 1rem;
     margin-right: 5rem;
     padding:0.5rem;
-    white-space: nowrap;
-  }
+    
+}
+
+table {
+  width:50%;
+}
 
 .title {
   text-align: center;
@@ -23,6 +27,31 @@ table, td, th {
   justify-content: 'center';
   align-items: 'center';
   height: '100vh';
+}
+
+.diff-list {
+  list-style: none;
+  padding-left: 0;
+  width:85%;
+}
+
+#file-diff-list {
+  padding:5px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgb(133, 133, 133);
+}
+
+.diff-addition {
+  background-color: rgba(186, 249, 186, 0.313);
+}
+
+.diff-deletion {
+  background-color: rgba(251, 200, 200, 0.313);
+}
+
+.commit-table-row {
+  text-decoration: none;
 }
 
 

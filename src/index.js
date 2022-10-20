@@ -5,6 +5,7 @@ import './index.css';
 import App from './App'
 import Home from './pages/Home'
 import Repository from './pages/Repository'
+import Commit from './pages/Commit'
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -13,6 +14,7 @@ root.render(
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="repository/:id" element={<Repository />} />
+      <Route path="repository/:id/commit/:sha" element={<Commit />} />
     </Routes>
   </BrowserRouter>
 

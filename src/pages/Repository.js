@@ -64,8 +64,8 @@ let Repository = () => {
         return timeStr.substring(0,10)
     }
 
-    let truncateMessage = (message) => {
-        return message.substring(0, 100) + "..."
+    let truncateMessage = (message, length) => {
+        return message.substring(0, length) + "..."
     }
 
     return (
@@ -94,18 +94,29 @@ let Repository = () => {
                         <th>Author</th>
                         <th>Message</th>
                         <th>Changes</th>
+                        <th>Code</th>
                     </tr>
                 </thead>
                 
                 <tbody>
                     {commits.map((commit, index) => (
                         
-                        <tr>
-                            <td key="time{index}">{ formatTime(commit.created_at)}</td>
-                            <td key="name{index}">{ commit.author_name }</td>
-                            <td key="msg{index}">{ truncateMessage(commit.message) }</td>
-                            <td key="stats{index}">{ commit.stats.total }</td>
-                        </tr>
+                            <tr>
+                                <td key="time{index}">{ formatTime(commit.created_at)}</td>
+                                <td key="name{index}">{ commit.author_name }</td>
+
+                                
+                                    <td key={`msg${index}`}>
+                                    <Link to={`/repository/${id}/commit/${commit.id}`} className="commit-table-row">
+                                        { truncateMessage(commit.message, 100) }
+                                    </Link>
+                                    </td>
+                            
+
+                                <td key="stats{index}">{ commit.stats.total }</td>
+                                <td>{ truncateMessage(commit.id, 8) }</td>
+                            </tr>
+                      
                     ))}
                 </tbody>
                 
