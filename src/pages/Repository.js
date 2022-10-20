@@ -1,16 +1,19 @@
 
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-export default function Repository () {
+let Repository = () => {
 
+    const { id } = useParams()
     let [repoInfo, setRepoInfo] = useState([])
     let [commits, setCommits] = useState([])
     let [developers, setDevelopers] = useState([])
     
     useEffect(() => {
-        getRepoInfo(2413)
-        getRepoCommits(2413)
+        console.log("ID: " + id)
+        getRepoInfo(id)
+        getRepoCommits(id)
         getDevelopers()
         console.log("Developers: " + developers)
     }, [])
@@ -66,13 +69,12 @@ export default function Repository () {
     }
 
     return (
-        <div className="repo-info">
+        <div className="repo-info container-fluid">
            
-            <h1 className="title">Repository</h1>
-            <Link to="/">Home</Link>
-            <h2 className="title">{repoInfo.name_with_namespace}</h2>
-
-            <h3>Developers</h3>
+            <h1 className="title">Repository - {repoInfo.name_with_namespace}</h1>
+            <Link to="/" className="btn btn-outline-primary">Home</Link>
+            
+            {/* <h3>Developers</h3>
             <ul className="member-list">
 
                 {developers.map((developer, index) => (
@@ -81,7 +83,7 @@ export default function Repository () {
                     </li>
                 ))}
 
-            </ul>
+            </ul> */}
 
             <h2>Commits</h2>
             
@@ -112,3 +114,5 @@ export default function Repository () {
         </div>
     )
 }
+
+export default Repository
