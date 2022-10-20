@@ -1,0 +1,10 @@
+table, td, th {
+    margin-left: 1rem;
+    margin-right: 5rem;
+    padding:0.5rem;
+    white-space: nowrap;
+  }
+
+.title {
+  text-align: center;
+}
