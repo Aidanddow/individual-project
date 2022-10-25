@@ -10,6 +10,8 @@ let Commit = () => {
     let [commit, setCommit] = useState([])
 
     useEffect(() => {
+        console.log("ID: " + id)
+        console.log("SHA: " + sha)
         getCommit(id, sha)
         getDiff(id, sha)
     }, [])
@@ -30,7 +32,9 @@ let Commit = () => {
     }
 
     let getDiff = async (id, sha) => {
-        const data = await fetchData(id, sha, "diff")       
+        const data = await fetchData(id, sha, "diff")
+        console.log(data)
+       
         setDiff(data)
     }
 
@@ -51,8 +55,8 @@ let Commit = () => {
             </ul>
             
             <h1>Commit Diff</h1>
-            <h4>Written by {commit.author_name} on {formatTime(commit.authored_date)}</h4>
-            <h5>This commit has {commit.stats.additions} additions, {commit.stats.deletions} deletions, and {commit.stats.total} total</h5>
+            {/* <h4>Written by {commit.author_name} on {formatTime(commit.authored_date)}</h4> */}
+            {/* <h5>This commit has {commit.stats.additions} additions, {commit.stats.deletions} deletions, and {commit.stats.total} total</h5> */}
             
             <ShowDiff diffStr={diff}/>
 

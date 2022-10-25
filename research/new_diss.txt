@@ -1,0 +1,428 @@
+Design 3.2
+ Design 3.2.1
+ Requirements Our primary requirements are obtained from discussions with GUSS senior staff.
+ These personnel are in charge
+ of supervising student developers and settings tasks and sprints weekly for them.
+ As discussed earlier, the basic objective of the
+ project is to provide an effective visualisation to enable the evaluation of developer contributions in a multi-developer, multi-repository environment.
+ The project is developed as a web application to reduce the overhead involved with installation and compatibility issues on several machines.
+ The web approach also provides advantages down the line like relatively hassle-free updates.
+ The requirement for this application are as
+ follows:- Functional Requirements User Interface The core part of any application is the user interface.
+ The user-application interaction in this
+ case is to be done via a website, whose server handles user input and performs the necessary analysis and data
+ extraction.
+ The interface needs to be user-friendly, clear and intuitive.
+ It should be composed of lists and charts to convey
+ the information gained from analysis of repositories.
+ It also should enable users to add repositories, view detailed information and perform
+ archival.
+ Dashboard The basic screen of the web application needs to provide a high-level overview of all the repositories and
+ developers in the institution.
+ This information includes information on the relative activity levels of various repositories and contributions by different
+ developers.
+ 14 Metrics As per our earlier discussions, the analysis of user contributions is made on the basis of the
+ metrics number of commits, number of files in commit and lines changed in each commit.
+ These are the smallest possible
+ set of metrics to be used for the minimum viable product and act as a suitable indicator of developer contribution.
+ This data is extracted from the git repository metadata.
+ Insights Alongside the display of data related to developer contribution, it
+ is also necessary to provide various insights related to repositories and developers to the application user.
+ This includes commit history,
+ latest branches, etc.
+ This data is useful at a glance for team leaders in their daily review process.
+ Visualisation The
+ bulk of the data presented to the user is required to be in the form of charts and visualisations to
+ make it easier to decipher and manipulate.
+ Dynamic charts with configurable date ranges would provide the user with more flexibility
+ in handling specific parts of the analysed data.
+ Non-Functional Requirements Visual Usability The application interface should be visually appealing and
+ easy to use.
+ In accordance with basic design guidelines, the interface should have an efficient layout, making apt use of
+ white space, while also maintaining a sense of hierarchy.
+ Additionally, the design of the interface should be consistent [23], both
+ internally and externally.
+ This refers to:- Internal consistency refers to the maintenance of a similar theme and design paradigm across
+ all the pages of the web application.
+ External consistency refers to maintaining expected design elements and behaviour when using components
+ resembling/from popular web applications.
+ Performance The task of analysing git metadata to extract useful information is one that has to
+ be repeated often on a periodic basis, depending on user activity.
+ It is also the most computationally intensive task in
+ the web application.
+ As such, this action has to be optimised thoroughly.
+ The optimisation of this task will play a
+ crucial role in ensuring that the application is extensible and scalable, as discussed below.
+ Extensibility The current version of the
+ application is developed as a minimum viable product.
+ However, future iterations will potentially involve the addition of more metrics and
+ data points to the analysis.
+ Hence, the development of the application logic has to be done in a manner that
+ allows such additions to be made in an easy 15 manner, without disrupting functionality.
+ An extensible application can grow as
+ much as required to meet different requirements in the future.
+ Scalability Scalability is the ability of an application to scale
+ up to handle increased volumes of data and user interaction.
+ Along the lifecycle of an application, it is inevitable that
+ it will require resource upgrades to continue handling data and user requests effectively.
+ The application has to be developed keeping
+ this in mind so that when such scaling is necessary, it can be done without a major overhaul of reworking
+ of the codebase, and with minimum downtime.
+ Portability Application portability refers to the capability of an application to be deployed/used
+ on multiple machines with minimal setup or overhead related to installation, setup and compatibility/dependency checks.
+ This is a crucial requirement
+ for applications that are targeted at a large number of end users.
+ MoSCoW Statements The prioritisation of tasks is an
+ important step in the software development process.
+ 
+ MoSCoW is an acronym commonly used to represent four hierarchical priority groups [24]
+ into which potential features and development tasks can be assigned to.
+ To proceed with implementation, we prioritize our requirements into
+ the four priority groups as follows:-
+
+Must Have 
+ • The application must enable users to add repositories to its database.
+ • The application must provide an overview of all repositories and developers in the database, alongside insights on repo activity.
+ • The application must provide indicators of yearly and monthly activities of top repositories, as per user choice.
+ • The application must provide insights of repositories in an appropriate manner, for set durations.
+ • The application must provide an at-a-glance count of the number of repositories on the home screen. This includes active repositories and stale repositories (repositories that haven’t seen activity in a long time).
+ • The application must provide an at-a-glance count of the number of developers on the home screen. This includes both active & inactive developers.
+ • The application must have a detail page for individual repositories to examine detailed information about them.
+ • The application must provide a representation of commit activity over time when viewing repository details. This representation must be simple and easy to understand.
+ • The application must provide information on the contribution made to a repository by the different developers working on it.
+ • The application must have a detail page for individual developers to examine detailed information about them. 16 
+ • The application must provide information on the work done by any individual developer on the various repositories that they work on.
+ 
+ Should Have 
+ • The application should provide the ability to analyse any branch in a repository.
+ • The application should allow users to fetch data on any branch in a repository.
+ • The application should facilitate the searching of any repository or developer in its database.
+ • The application should allow users to archive repositories so that they are removed from the list of stale repositories.
+ • The application should display recent branch activity on a given repository as well as the most recent commits.
+ 
+ Could Have 
+ • The application could repositories based on descending order of last modified date.
+ 
+ Won’t Have 
+ • The application won’t include features that enable project management like handling of merge requests or issue tracking, setting milestones, weightage assignment, etc.
+ • The application won’t and isn’t meant to serve as a replacement to mainstream git hosting services like Github, Gitlab and Bitbucket. As such, its feature list is not based on these services.
+ • The application won’t provide commit details including code diffs(list of changes per file of commit) in the repository views.
+ 
+ 
+ 3.2.2
+ System Architecture Figure 7 – System Architecture The
+ application architecture follows a conventional web application architecture involving a web server, database and client.
+ The various components are implemented
+ in the following manner:- 17 
+ 
+ • Python Django for the backend server: The server handles user requests and builds the
+ output to be served to the client.
+ It also performs the data extraction and analysis of the git metrics from
+ the git metadata.
+ Django offers the advantages of being very quick to setup and build, as well as being efficient
+ and secure out of the box.
+ It comes with many features inbuilt so that users can work on implementing project
+ logic without wasting valuable time on boilerplate code.
+ The integration of the backend with the frontend is facilitated by the
+ use of Django REST framework, a powerful web API toolkit.
+ The framework allows rapid development of web APIs and reduces
+ the need for boilerplate.
+ 
+ 
+ • GitPython for repository data processing: GitPython is a python library that is used to interact
+ with Git repositories.
+ For instance, it allows users to view all branches in a repository, select one and iterate through
+ its commits, as well as create and push new commits.
+ Gitpython is used to facilitate the extraction and manipulation of
+ data from git repositories.
+ It provides a level of abstraction between the business logic of the program and the minutiae
+ of metadata parsing.
+ 
+ 
+ • SQLite Database: The database is used to store data extracted from the git metadata to an
+ optimised, non-volatile location.
+ It facilitates the subsequent efficient retrieval and manipulation of said data.
+ Usage of a dedicated database over
+ the raw git data offers performance improvements.
+ Such dedicated databases enable complicated data processing tasks to be done on the
+ data so that it can be conveyed to the client in a manner that is most suited to their requirement.
+ 
+ 
+ • React web client: The client application is built using React, which provides the advantages of quick development and a
+ modular programming paradigm.
+ React allows easy development of single page applications, which feature web application web applications that only fetch
+ the whole page once, with subsequent page navigations being done dynamically by ajax/fetch requests.
+ This means that only the required
+ data is requested from the server.
+ Additionally, react makes optimisations to the page renderer in such a way that only
+ those parts of the page that need to be changed are redrawn.
+ This amounts to significant savings in both server
+ and client processing time.
+ 3.2.3
+ ER Diagram The Entity-Relationship Diagram of an application illustrates the interactions and relationships between the
+ different entities in its database.
+ As per our requirements, the immediately relevant objects to be modelled are repositories and developers.
+ 18 Figure 8 – Entity Relationship Diagram In addition, the examination of developer contribution to repositories via commits in multiple
+ branches necessitates the modelling of branches and commits as well.
+ 3.2.4
+ Tiered Visualisation Visualisation of the data extracted from the
+ git metadata is the second crucial point in providing quick and effective analysis of said data.
+ To be effective in
+ its objective, the chosen visualisation must be detailed but not too complex, and simple but not too simple to be
+ inefficient.
+ In keeping with the nature of the data used in the application, it is apt to approach visualisation in
+ a multi-tiered manner.
+ Splitting visualisation into different charts with different levels of detail maintains simplicity while not compromising on detail.
+ The visualisation can be split into the following views: 
+ 
+ • Overview – Dashboard This view provides a broad level of
+ information about all the repositories and developers present in the application database.
+ The dashboard lists several repositories and developers in
+ particular (based on frequent activity), while also offering charts to convey the activity level among top repositories for a selected
+ duration.
+ This view also highlights the presence of stale repositories or inactive developers so that team leaders can take necessary
+ action without having to actively search for them first.
+ 19 Figure 9 - Dashboard 
+ 
+ • Detailed View – Repository The
+ repository page provides detailed information on a selected repository.
+ This tier of visualisation offers more detail at the cost of
+ focusing on just a single repository.
+ This includes a list of branches, list of developers working on the repository and
+ time of last activity.
+ Figure 10 – Repository Page with heat map The page also includes a heat map that
+ indicates the activity on the selected branch on any day.
+ This view is again divided into tiers based on the
+ user input.
+ Hovering on a cell displays the number of commits performed on the corresponding date.
+ Additionally, clicking on a
+ cell in the heat map provides more details on the commits for that day, such as the 20 number of
+ files affected in the commit, and the number of lines affected by it.
+ 
+ 
+ • Detailed View – Developers The detailed
+ view for developers is analogous to that of repositories.
+ This view provides a list of repositories the developer works on.
+ Additionally, it includes a heat map that indicates the level of work done across all repositories for that developer.
+ Hovering
+ on a cell displays the number of commits made on the particular day.
+ Clicking on a cell brings up a
+ list of commits made on that day, with details on the repository involved and the commit details.
+ Figure 11 –
+ Developer information card 3.2.5
+ Data Representation This section explores the different kinds of representation schemes used for visualisation in the
+ application.
+ These approaches were adopted to ensure that the system would be open to extension involving more metrics at a
+ later point of time without significant overhead.
+ The different representations used are as follows:- 
+ 
+ • Heat map A heat map
+ is a very simple but elegant approach to representing data distributed over time.
+ Instead of using a vertical aspect to
+ denote intensity like conventional charts, heat maps signify this using different shades of colour.
+ Heat maps can also represent aggregates
+ of different metrics, so it is extensible.
+ Heat maps are used by online git hosting platforms like Github and Gitlab,
+ but their usage in these platforms are limited to the user profile.
+ Our application expands upon this to use this
+ chart to much more effective ends.
+ • Line chart The simple line chart is effective at illustrating trends in data.
+ In our application, this representation is used to indicate the number of commits in a repository for a given timeframe.
+ • Pie chart Pie charts are effective at showing the composition of contributions among different entities.
+ In the application, the
+ pie chart is used to indicate the share of the value no.
+ of commits * no.
+ of line changes in
+ each repository.
+ 3.2.6
+ Performance Considerations As briefly touched upon in an earlier section, the computational efficiency of the application is
+ crucial in ensuring its extensibility and scalability.
+ The periodic repetition of git data extraction and processing, as well as recall
+ of already processed data puts a heavy toll on resources.
+ To alleviate this resource drain, a dedicated database was used
+ to store already processed data, to save valuable time 21 on fetching this data, bypassing the raw git metadata store.
+ The SQLite backend is far more performant in fetching and processing data than manually parsing data from the git metadata
+ and manipulating it in-memory.
+ In the client side, such optimisations were made by utilising Redux store to cache data.
+ This
+ enables quick reuse of large volumes of frequently used data without the need for costly network requests.
+ Client-server data communication
+ primarily utilizes AJAX.
+ This has the advantage of reducing the need for complete page reloads.
+ In addition, to save on
+ storage space, the git repositories are not cloned completely into the project filesystem.
+ Rather, it makes use of bare repositories,
+ which only includes a .git
+ folder (which contains all repo metadata).
+ On the other hand, cloning the entire source codes
+ of multiple repositories would quickly bottleneck the storage resources on most servers.
+ 3.3
+ Implementation The following section delves into detail
+ on the implementation of the discussed application, whose source code is hosted on a public git repository [26].
+ Our finalised
+ design is implemented as a web application; a single page application, to be precise.
+ The backend application server and database
+ is hosted on an Amazon Web Services (AWS) EC2 instance.
+ The application backend, running python Django, serves the react application
+ on initial page load on client browsers and subsequently communicates with the client via AJAX to serve the requested data.
+ Django rest framework is used to develop the web API between the server and client.
+ The application is made accessible
+ at http://13.232.126.97.
+ Note that a domain name is not used during the minimum viable product phase.
+ Figure 12 – Work
+ flow diagram Moving forward, we inspect the methods used to carry out the basic tasks involved in the analysis of
+ git repositories.
+ To do so, we use a set flow to walk through the major steps involved in the feature
+ set of the application.
+ This flow is summarised 22 in Figure 12.
+ Starting from the dashboard, let us inspect the
+ workflow travelling upwards to add a repository to the application.
+ 3.3.1
+ Add Repository To begin, a user first goes to
+ the repositories page, clicks on the ‘Add Repo’ button and enters the git repo URL and credentials into the dialog
+ box.
+ 1.
+ Clone the repository to a directory in the project.
+ 2.
+ Fetch from the remote repository to ensure it
+ is at the latest state [Appendix A.1].
+ 3.
+ Save the bare repository to the local file system.
+ 4.
+ Save the
+ repository with the corresponding repo_name and repo_url to the ‘Repository’ table.
+ 5.
+ Save all the branches of the repository in
+ the database Branch table [Appendix A.2].
+ 6.
+ Iterate over the branches and assign the master/main branch as the current branch.
+ 7.
+ Iterate over all commits in the branch [Appendix A.1].
+ 8.
+ Save all the commits under the main branch in
+ the database.
+ 9.
+ Save the distinct set of authors in the commits to the Developer table, while preserving data on
+ the commit-author many-to-many relationship.
+ 10.
+ Set the start date of the repo as the date of initial commit on the
+ current branch.
+ 11.
+ Set the last authored date of the repo.
+ This last task (setting the latest activity date on
+ a branch) can further be broken down into the following steps:- 1.
+ Sort all branches of the repo by descending
+ order of last authored date.
+ [Appendix A.3]
+ 2.
+ Select the first branch from the sorted list, which is the branch
+ with the latest commit.
+ 3.
+ Use the date of the last commit of this branch as the last authored date
+ of the repo.
+ With the above sets, a remote repository is imported into the application database, and its relevant fields
+ are set, such as repo_name, repo_url, start_date, last_authored_date.
+ The main branch and most recent branch is also saved in the
+ database for easy querying of data.
+ Hence, the repository metadata is stored in an easy to access (and easy to
+ process) manner for future operations.
+ Additionally, the developers working on the repository are identified and saved to the database by
+ inspecting the commit data of the repository.
+ Querying the unique set of authors across all the commits in the repository
+ returns this list.
+ 3.3.2
+ Fetch Repository Next, we inspect the created repository by clicking on it in the repository page.
+ This involves the querying of basic repository information, as well as commits of the selected branch (the most recent branch
+ by default).
+ 1.
+ Fetch the repo to update to latest state [Appendix A.4].
+ 2.
+ Save new remote branches to the
+ database, if any.
+ 23 3.
+ Set last authored date of the repository, as seen in the previous section.
+ 4.
+ Iterate
+ over latest commits of the selected branch [Appendix A.5].
+ 5.
+ Find new commits by searching for commits with authored date
+ greater than last_fetch_date of the branch.
+ of the branch.
+ Save these to the database.
+ 6.
+ Set last_fetch_date of the branch
+ to the current datetime.
+ 3.3.3
+ Heat Map Generation When the page is loaded (or a new repository is clicked), the
+ commits are queried for the duration of the present year.
+ This commit data is used to generate the heat map
+ in the repository screen.
+ The below formula is used to generate an activity score for generating the heat map.
+ For
+ every cell/day in the heat map, the activity is derived in the following manner.
+ • Using a pre-set range of
+ thresholds, the number of commits is mapped to a real number in the range of 0 to 4.
+ • Similarly,
+ the number of files changed is also mapped to a 0-4 value using another set of thresholds.
+ • The activity
+ score is the arithmetic mean of the above two values.
+ This activity score determines the shade used to fill the
+ particular cell on the heat map.
+ This is done for all days to generate the complete map.
+ When a different
+ year is selected, the start_date and end_date of [Appendix A.5]
+ is modified accordingly to get the relevant commits and re-render
+ the heat map.
+ 3.3.4
+ Repository Information Identifying stale repositories is a major feature provided by the application.
+ This is implemented
+ in a straightforward manner.
+ Whenever the dashboard is rendered, the backend queries all the repositories and associated developers to populate
+ the information cards and the charts.
+ During this process, stale repositories are identified simply by querying the database for repositories
+ whose last_authored_date field is set to a date that is equal to or older than seven days from the current
+ date.
+ In addition, to find the top repositories for the dashboard graphs, the repositories are queried and sorted based on
+ descending order of activity in a particular time period.
+ The line chart is generated based on the top 5 repositories
+ based on number of commits in the last week/month/year.
+ The pie chart for repository contribution, on the other hand, uses
+ the number of changed lines as the defining metric.
+ 3.3.5
+ Developer Information The developers section in the application works in
+ an analogous manner to the repository pages.
+ Similar to the repository heat map, the heat map for developer activity is
+ generated using the data queried for a single developer across all repositories.
+ The generation of the heat map follows the
+ same steps as of the repository heat map.
+ To identify inactive developers, the system first queries all the commits in
+ the last seven days and aggregates them to get the distinct set of developers that authored them.
+ This is the
+ set of developers who made at least a single commit in the 24 previous seven days.
+ This set is then
+ subtracted from the total developer set to obtain the list of inactive developers.
+ In the manner described above, it is
+ possible to assemble various insights by processing the commit history of all branches in a repository.
+ Various angles of insight
+ can be provided to team leaders to assist in work allocation and team composition, based on this single source of
+ truth.
+
+
+5.2 Future Work As the project proceeds beyond the minimum viable product phase, the first and most 
+obvious order of improvement of the application would be to incorporate more metrics into the contribution 
+analysis logic; this makes the assessment more robust and immune to manipulation by developers. Currently,
+a developer who is aware of the presence of this assessment can artificially boost their assessment scores 
+without going to a lot of trouble. Addressing this is therefore of prime importance. Improvements to the actual 
+data extraction method is also desirable to improve extensibility and scalability of the product. Using APIs that 
+integrate with Github/Gitlab/Bitbucket would allow for fetching repository metadata without having to first clone 
+the repo to the server filesystem. This was omitted during the current phase due to the limited timeframe and the 
+nature of the minimum viable product. Implementing this has its challenges, since each service has its own distinct 
+API. Once completed however, such an integration will greatly improve product performance and save hardware resources 
+(both storage space and CPU time). Additionally, it also opens the door to using metrics such as open pull requests
+and issue tracking. Including such data in contribution analysis would no doubt increase the efficacy of the program.
+Another avenue to be improved is the user interface of the web application. As revealed in the evaluation phase, participants 
+(especially the team leaders) communicated the need to better structure the charts for higher volumes (like yearly activity). 
+This can be addressed by adding another layer of aggregation for commits. In addition, it is also important 
+to add a few prompts and dialog boxes to guide new users to interact with the various components (namely the heat map). In 
+addition, as the metrics and complexities involved increase, so too will the number of graphs to be shown in the dashboard
+
