@@ -33,3 +33,11 @@
 * Monday 17/10/22 (2.5 hours): Met with Derek, wrote up minutes on meeting. Had a meeting with Tim Storer and Merilla, regarding their vision for the project. Wrote up minutes on that meeting, and started research on using GitLab API for project.
 
 * Tuesday 18/10/22 (1 hour): Read more "Hall of fame" Dissertations to get an idea of their process. Begun thinking about how to proceed, given the new vision for the project.
+
+* Wednesday 19/10/22 (3 hours): Wrote MoSCoW requirements for project, begun planning first sprint. Started work on REACT App
+
+* Thursday 20/10/22 (7 hours): Continued work on developing application, now have a simple application where a project ID can be entered, and the commits of the project viewed, along with diff information
+
+
+### Week 6
+* Monday 17/10/22 (1 hour): Planned supervisor meeting, met with Derek, wrote Minutes on meeting.

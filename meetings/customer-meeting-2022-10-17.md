@@ -1,5 +1,5 @@
 ## Customer Meeting 1
-#### 10th of October 2022: 3.00-3.45pm
+#### 17th of October 2022: 3.00-3.45pm
 ##### MS Teams - Aidan Dow, Derek Somerville, Tim Storer, Mereilla Bikanga Ada
 
 * Tim reveals that he would like to use the application to monitor the L3 Team projects.
