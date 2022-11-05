@@ -47,3 +47,5 @@
 * Monday 31/10/22 (3 hours): Fixed several bugs in application. Planned supervisor meeting, had supervisor meeting. Started work on repository grid view in application.
 
 * Thursday 03/10/22 (0.5 hour): Wrote up minutes on mondays supervisor meeting, updated timelog.
+
+* Saturday 05/10/22 (4 hours): Worked on repository grid view, tested various pagination strategies with a jupyter notebook, implemented findings into project.
