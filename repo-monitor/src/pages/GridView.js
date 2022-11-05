@@ -1,25 +1,34 @@
 
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react"
-import RepositoryPanel from "../components/RepositoryPanel";
+import RepositoryGrid from "../components/RepositoryGrid";
 
-let RepositoryGrid = () => {
+let GridView = () => {
     let [repos, setRepos] = useState([])
-    let [id, setId] = useState([])
+    let [request, setRequest] = useState("")
+    let [newID, setNewID] = useState([])
     
     useEffect(() => {
         setRepos([6119, 2412, 2413, 6030, 6029, 5967, 6270, 6030])
+        setRequest("repository/commits")
     }, [])
 
     let handleIdInputChange = (event) => {
-        setId(event.target.value)
+        setNewID(event.target.value)
     }
 
     let handleSubmit = (event) => {
         event.preventDefault();
-        setRepos([...repos, id])
-        setId([null])
+        setRepos([...repos, newID])
+        setNewID([null])
         console.log("REPOS: " + repos)
+    }
+
+    let showIssues = event => {
+        setRequest("issues")  
+    }
+    let showCommits = event => {
+        setRequest("commits")  
     }
     
     return (
@@ -28,28 +37,30 @@ let RepositoryGrid = () => {
             <div className="col-2"></div>
             <div className="col-8">
                 <div className="container-fluid">
+                    
                     <div className="row">
                         <div className="col">
-                        <Link to="#" className="btn btn-outline-primary">Issues</Link>
+                            <button onClick={showIssues} className="btn btn-outline-primary">
+                                Issues
+                            </button>
+
+                            <button onClick={showCommits} className="btn btn-outline-primary">
+                                Commits
+                            </button>
+
+                            <button onClick={() => {console.log(request)}} className="btn btn-outline-primary">Show Request</button>
                         </div>
 
                         <div className="col">
                             <h1 className="title">Commits</h1>
                         </div>
 
-                        <div className="col">
-                            <Link to="#" className="btn btn-outline-primary">PR's </Link>
-                        </div>
                     </div>
-                    <div className="row">
+                    
+                  
+                    <RepositoryGrid request={request} repos={repos}/>
+                 
 
-                        {repos.map((repo) => (
-                            <div className="col">
-                                <RepositoryPanel id={repo}/>
-                            </div>
-                        ))}
-                        
-                    </div>
                 </div>
             </div>
             <div className="col-2"></div> 
@@ -60,7 +71,7 @@ let RepositoryGrid = () => {
                 <form>
                     <input onSubmit={handleSubmit}
                         onChange={handleIdInputChange }
-                        value={id}
+                        value={newID}
                         placeholder="Add a Repository (ID)"
                         name="Repository ID"/>
                 </form>
@@ -73,4 +84,4 @@ let RepositoryGrid = () => {
     )
 }
 
-export default RepositoryGrid
+export default GridView

@@ -6,7 +6,7 @@ import App from './App'
 import Home from './pages/Home'
 import Repository from './pages/Repository'
 import Commit from './pages/Commit'
-import RepositoryGrid from './pages/RepositoryGrid'
+import GridView from './pages/GridView'
 import Navbar from './components/Navbar'
 import reportWebVitals from './reportWebVitals';
 
@@ -18,7 +18,7 @@ root.render(
       <Route path="/" element={<Home />} />
       <Route path="repository/:id" element={<Repository />} />
       <Route path="repository/:id/commit/:sha" element={<Commit />} />
-      <Route path="repositorygrid/" element={<RepositoryGrid />} />
+      <Route path="repositorygrid/" element={<GridView />} />
     </Routes>
   </BrowserRouter>
 

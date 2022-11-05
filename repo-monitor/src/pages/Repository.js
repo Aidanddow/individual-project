@@ -12,7 +12,6 @@ let Repository = () => {
     let [developers, setDevelopers] = useState([])
     
     useEffect(() => {
-        console.log("ID: " + id)
         setLoading(true)
         getRepoInfo(id)
         getRepoCommits(id)
@@ -50,12 +49,10 @@ let Repository = () => {
             data = data.concat(newData)
             newData = await fetchData(id, `repository/commits?with_stats=yes&page=${i}`)
             
-            console.log(i)
             i++
             
         } while (!(Object.keys(newData).length === 0))
 
-        console.log(data[-1])
         setCommits(data)
     }
 
@@ -92,7 +89,6 @@ let Repository = () => {
             </ul> */}
 
             <h2>Commits</h2>
-            <div>{console.log(commits.length)}</div>
 
             {loading ? 
             <h1>Loading...</h1> : 
