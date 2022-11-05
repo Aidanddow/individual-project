@@ -6,16 +6,19 @@ import { useParams } from "react-router-dom";
 let Repository = () => {
 
     const { id } = useParams()
+    let [loading, setLoading] = useState(false)
     let [repoInfo, setRepoInfo] = useState([])
     let [commits, setCommits] = useState([])
     let [developers, setDevelopers] = useState([])
     
     useEffect(() => {
         console.log("ID: " + id)
+        setLoading(true)
         getRepoInfo(id)
         getRepoCommits(id)
         getDevelopers()
         console.log("Developers: " + developers)
+        setLoading(false)
     }, [])
 
     let getUrl = (id, request) => {
@@ -40,15 +43,19 @@ let Repository = () => {
 
     let getRepoCommits = async (id) => {
         let i = 2
+        let data = await fetchData(id, `repository/commits?with_stats=yes&page=1&per_page=100`)
         let newData
-        let data = await fetchData(id, `repository/commits?with_stats=yes&page=1`)
-        do {
-            let newData = await fetchData(id, `repository/commits?with_stats=yes&page=${i}`)
+        
+        do { 
             data = data.concat(newData)
+            newData = await fetchData(id, `repository/commits?with_stats=yes&page=${i}`)
+            
+            console.log(i)
             i++
-        } while (newData)
+            
+        } while (!(Object.keys(newData).length === 0))
 
-        setRepoInfo(data)
+        console.log(data[-1])
         setCommits(data)
     }
 
@@ -72,7 +79,6 @@ let Repository = () => {
         <div className="repo-info container-fluid">
            
             <h1 className="title">Repository - {repoInfo.name_with_namespace}</h1>
-            <Link to="/" className="btn btn-outline-primary">Home</Link>
             
             {/* <h3>Developers</h3>
             <ul className="member-list">
@@ -86,6 +92,11 @@ let Repository = () => {
             </ul> */}
 
             <h2>Commits</h2>
+            <div>{console.log(commits.length)}</div>
+
+            {loading ? 
+            <h1>Loading...</h1> : 
+            
             
             <table className="table table-hover table-bordered">
                 <thead>
@@ -99,28 +110,39 @@ let Repository = () => {
                 </thead>
                 
                 <tbody>
-                    {commits.map((commit, index) => (
+                    {commits.filter((commit) => {
+                        if (commit) 
+                            return true; 
+                        else 
+                            return false
+                    }).map((commit, index) => (
                         
-                            <tr>
-                                <td key="time{index}">{ formatTime(commit.created_at)}</td>
-                                <td key="name{index}">{ commit.author_name }</td>
-
-                                
-                                    <td key={`msg${index}`}>
-                                    <Link to={`/repository/${id}/commit/${commit.id}`} className="commit-table-row">
-                                        { truncateMessage(commit.message, 100) }
-                                    </Link>
-                                    </td>
+                        <tr>
+                            <td key={`time${index}`}>
+                                { formatTime(commit.created_at)}
+                            </td>
                             
+                            <td key={`name${index}`}>
+                                { commit.author_name }
+                            </td>
 
-                                <td key="stats{index}">{ commit.stats.total }</td>
-                                <td>{ truncateMessage(commit.id, 8) }</td>
-                            </tr>
+                            
+                            <td key={`msg${index}`}>
+                                <Link to={`/repository/${id}/commit/${commit.id}`} className="commit-table-row">
+                                    { truncateMessage(commit.message, 80) }
+                                </Link>
+                            </td>
+
+                            <td key={`stats${index}`}>{ commit.stats.total }</td>
+                            <td key={`id${index}`}>{ truncateMessage(commit.id, 8) }</td>
+
+                        </tr>
                       
                     ))}
                 </tbody>
                 
             </table>
+        }
                
         </div>
     )

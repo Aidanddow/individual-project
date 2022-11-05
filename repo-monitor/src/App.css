@@ -1,8 +1,14 @@
+
 table, td, th {
     margin-left: 1rem;
     margin-right: 5rem;
     padding:0.5rem;
     
+}
+
+h6 {
+  white-space: nowrap;
+  font-weight:bold;
 }
 
 table {
@@ -11,6 +17,29 @@ table {
 
 .title {
   text-align: center;
+}
+
+.card {
+  margin-bottom:15px;
+  max-width: 15vw;
+  text-align: center;
+}
+
+.links {
+  list-style: none;
+}
+
+.application-name {
+  margin-left:20px;
+}
+
+.navbar-search {
+  position: absolute;
+  right: 20px;
+}
+
+.repository-grid {
+ margin-top: 20px;
 }
 
 .homepage {
@@ -28,6 +57,7 @@ table {
   align-items: 'center';
   height: '100vh';
 }
+
 
 .diff-list {
   list-style: none;
@@ -54,10 +84,10 @@ table {
   text-decoration: none;
 }
 
-
 .gotorepo {
   margin-left:5px;
 }
+
 .enter-id {
   display:flex;
   align-items:center;
