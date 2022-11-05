@@ -49,12 +49,10 @@ let Commit = () => {
 
     return (
         <div class="container-fluid">
-            <ul>
-                <li><Link to="/">Home</Link></li>
-                <li><Link to={`/repository/${id}`}>Back to Repository</Link></li>
-            </ul>
             
             <h1>Commit Diff</h1>
+            
+            <Link to={`/repository/${id}`} className="btn btn-outline-primary">Back to Repository</Link>
             {/* <h4>Written by {commit.author_name} on {formatTime(commit.authored_date)}</h4> */}
             {/* <h5>This commit has {commit.stats.additions} additions, {commit.stats.deletions} deletions, and {commit.stats.total} total</h5> */}
             
