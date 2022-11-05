@@ -38,6 +38,12 @@
 
 * Thursday 20/10/22 (7 hours): Continued work on developing application, now have a simple application where a project ID can be entered, and the commits of the project viewed, along with diff information
 
+* Saturday 22/10/22 (2 hours): Continued work developing application, fixed some bugs.
 
-### Week 6
-* Monday 17/10/22 (1 hour): Planned supervisor meeting, met with Derek, wrote Minutes on meeting.
+### Week 7
+* Monday 24/10/22 (2 hours): Planned supervisor meeting, setup application on computer, had supervisor meeting, wrote minutes on meeting. Moved files to new repository.
+
+### Week 8
+* Monday 31/10/22 (3 hours): Fixed several bugs in application. Planned supervisor meeting, had supervisor meeting. Started work on repository grid view in application.
+
+* Thursday 03/10/22 (0.5 hour): Wrote up minutes on mondays supervisor meeting, updated timelog.
