@@ -7,14 +7,11 @@ let RepositoryPanel = ({id, request}) => {
 
     let [repoName, setRepoName] = useState([])
     let [stat, setStat] = useState([])
-    let [startDate, setStartDate] = useState([])
-   
+    
     useEffect(() => {
         getRepoName(id)
         getRepoStat(id, request)
-        setStartDate("2022-05-01")
-
-    }, [])
+    }, [request])
 
     let getUrl = (id, request) => {
         return `https://stgit.dcs.gla.ac.uk/api/v4//projects/${id}/${request}`
@@ -59,24 +56,6 @@ let RepositoryPanel = ({id, request}) => {
         setStat(statistic)
     }
 
-    let dateInRange = (data) => {
-        let earliest = new Date("2022-01-01")
-        let commit, d1
-        
-
-        let num = data.filter((commit) => {
-            try {
-                d1 = new Date(commit.created_at)
-                return (d1 >= earliest)
-            } catch {
-                return false
-            }
-            
-        }).length
-  
-        return [true, num]
-    }
-
     let getRepoName = async (id) => {
         let data = await fetchData(id, "")
         let dataJson = await data.json()
@@ -87,14 +66,16 @@ let RepositoryPanel = ({id, request}) => {
 
     return (
         <div className="card">
-            <Link to={`/repository/${id}`}>
+            <Link to={`/repository/${id}`} className='repo-title'>
                 <div className="card-header">
-                <h6 className="title">{repoName}</h6>
+                <h6 className="repo-title">{!Number.isNaN(stat) ? repoName : "Not Found"}</h6>
                 </div>
             </Link>
             <div className="card-body">
-                <h2 className="commits">{stat}</h2>
+                <h2 className="commits">{!Number.isNaN(stat) ? stat : "-"}</h2>
             </div>
+
+            <button className="btn btn-sm btn-outline-danger">Delete</button>
             
             
         </div>

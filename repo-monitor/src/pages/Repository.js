@@ -8,17 +8,27 @@ let Repository = () => {
     const { id } = useParams()
     let [loading, setLoading] = useState(false)
     let [repoInfo, setRepoInfo] = useState([])
+
     let [commits, setCommits] = useState([])
+
+    let [curPage, setCurPage] = useState(1)
+    let [nextPage, setNextPage] = useState(2)
+
     let [developers, setDevelopers] = useState([])
     
     useEffect(() => {
         setLoading(true)
         getRepoInfo(id)
-        getRepoCommits(id)
+        getRepoCommits(id, 1)
         getDevelopers()
         console.log("Developers: " + developers)
         setLoading(false)
     }, [])
+
+    useEffect(() => {
+        getRepoCommits(id, curPage)
+        console.log("Commits now has " + commits.length)
+    }, [curPage])
 
     let getUrl = (id, request) => {
         return `https://stgit.dcs.gla.ac.uk/api/v4//projects/${id}/${request}`
@@ -31,29 +41,22 @@ let Repository = () => {
                 "PRIVATE-TOKEN": "glpat-N7BrBvPV3CqT2Unn1-Zh"
             }
         })
-        let data = await response.json()
-        return data
+        return response
     }
 
     let getRepoInfo = async (id) => {
         let data = await fetchData(id, "")
-        setRepoInfo(data)
+        let dataJson = await data.json()
+        setRepoInfo(dataJson)
     }
 
-    let getRepoCommits = async (id) => {
-        let i = 2
-        let data = await fetchData(id, `repository/commits?with_stats=yes&page=1&per_page=100`)
-        let newData
+    let getRepoCommits = async (id, page) => {
+        let response = await fetchData(id, `repository/commits?with_stats=yes&page=${page}&per_page=50`)
+        let data = await response.json()
         
-        do { 
-            data = data.concat(newData)
-            newData = await fetchData(id, `repository/commits?with_stats=yes&page=${i}`)
-            
-            i++
-            
-        } while (!(Object.keys(newData).length === 0))
-
-        setCommits(data)
+        setNextPage(response.headers.get("x-next-page"))
+        setCommits(commits.concat(data))
+        console.log("COmmits: " + commits)
     }
 
     let getDevelopers = () => {
@@ -106,12 +109,7 @@ let Repository = () => {
                 </thead>
                 
                 <tbody>
-                    {commits.filter((commit) => {
-                        if (commit) 
-                            return true; 
-                        else 
-                            return false
-                    }).map((commit, index) => (
+                    {commits.map((commit, index) => (
                         
                         <tr>
                             <td key={`time${index}`}>
@@ -138,6 +136,9 @@ let Repository = () => {
                 </tbody>
                 
             </table>
+        }
+        {nextPage && 
+            <button onClick={() => setCurPage(curPage + 1)} className="btn btn-outline-primary">Load More</button>
         }
                
         </div>

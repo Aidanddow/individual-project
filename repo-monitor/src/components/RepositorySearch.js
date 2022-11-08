@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 let Home = () => {
     
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     let [id, setId] = useState([])
     
@@ -14,8 +14,8 @@ let Home = () => {
     }
 
     let handleSubmit = (event) => {
-        event.preventDefault();
-        navigate(`/repository/${id}`);
+        event.preventDefault()
+        navigate(`/repository/${id}`)
     }
 
     return (

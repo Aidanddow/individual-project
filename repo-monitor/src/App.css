@@ -15,12 +15,14 @@ table {
   width:50%;
 }
 
-.title {
+.repo-title {
   text-align: center;
+  text-decoration: none;
+  color:black;
 }
 
 .card {
-  margin-bottom:15px;
+  margin-bottom:10px;
   max-width: 15vw;
   text-align: center;
 }
@@ -36,6 +38,11 @@ table {
 .navbar-search {
   position: absolute;
   right: 20px;
+}
+
+.btn {
+  margin-right:5px;
+  margin-bottom:10px;
 }
 
 .repository-grid {

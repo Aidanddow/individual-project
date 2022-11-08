@@ -1,17 +1,30 @@
 
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react"
 import RepositoryGrid from "../components/RepositoryGrid";
 
 let GridView = () => {
     let [repos, setRepos] = useState([])
     let [request, setRequest] = useState("")
+    let [requests, setRequests] = useState(new Map())
     let [newID, setNewID] = useState([])
     
     useEffect(() => {
-        setRepos([6119, 2412, 2413, 6030, 6029, 5967, 6270, 6030])
+        let reqs = new Map()
+        reqs.set("Commits", "repository/commits")
+        reqs.set("Issues", "issues")
+        reqs.set("Branches", "repository/branches")
+        reqs.set("Merge Requests", "merge_requests")
+        setRequests(reqs)
+
+        const initialRepos = JSON.parse(localStorage.getItem("ids"))
+        setRepos(initialRepos)
+        
         setRequest("repository/commits")
     }, [])
+
+    useEffect(() => {
+        localStorage.setItem("ids", JSON.stringify(repos))
+    }, [repos])
 
     let handleIdInputChange = (event) => {
         setNewID(event.target.value)
@@ -21,38 +34,33 @@ let GridView = () => {
         event.preventDefault();
         setRepos([...repos, newID])
         setNewID([null])
+        
         console.log("REPOS: " + repos)
-    }
-
-    let showIssues = event => {
-        setRequest("issues")  
-    }
-    let showCommits = event => {
-        setRequest("commits")  
     }
     
     return (
         <div className="repository-grid container-fluid">
             <div className="row">
             <div className="col-2"></div>
+
             <div className="col-8">
                 <div className="container-fluid">
                     
                     <div className="row">
+                        <h1 className="title">Repository Grid</h1>
+                    </div>
+
+                    <div className="row">
                         <div className="col">
-                            <button onClick={showIssues} className="btn btn-outline-primary">
-                                Issues
-                            </button>
 
-                            <button onClick={showCommits} className="btn btn-outline-primary">
-                                Commits
-                            </button>
+                            {[...requests.keys()].map((name) => (
+                                <button onClick={() => {setRequest(requests.get(name)) }} 
+                                className={`btn btn-outline-primary 
+                                    ${request===requests.get(name) && "active"}`}>
+                                        {name}
+                                </button>
+                            ))}
 
-                            <button onClick={() => {console.log(request)}} className="btn btn-outline-primary">Show Request</button>
-                        </div>
-
-                        <div className="col">
-                            <h1 className="title">Commits</h1>
                         </div>
 
                     </div>
