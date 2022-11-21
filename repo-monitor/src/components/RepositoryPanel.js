@@ -3,15 +3,17 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
 
 
-let RepositoryPanel = ({id, request}) => {
+let RepositoryPanel = ({id, request, period}) => {
 
     let [repoName, setRepoName] = useState([])
     let [stat, setStat] = useState([])
     
     useEffect(() => {
+        setStat("...")
+        console.log("PERIODDDDDDDD: " + period)
         getRepoName(id)
         getRepoStat(id, request)
-    }, [request])
+    }, [request, period])
 
     let getUrl = (id, request) => {
         return `https://stgit.dcs.gla.ac.uk/api/v4//projects/${id}/${request}`
@@ -27,16 +29,48 @@ let RepositoryPanel = ({id, request}) => {
         return response
     }
 
+    let dateInRange = (d) => {
+        let dateFilter = period
+        return (d >= dateFilter)
+    }
     
-    let getFullPages = async (id, request) => {
+    let getPagesInRange = async (id, request) => {
         let page = 1
+        
         while (true) { 
-            let response = await fetchData(id, `${request}?page=${page}&per_page=100`)
+            let response = await fetchData(id, `${request}?page=${page}&per_page=20`)
             
-            let nextPage = await response.headers.get("x-next-page")
-            if (!nextPage) return page-1
-            page ++
+            let nextPage = response.headers.get("x-next-page")
+            if (!nextPage) return page
+
+            let data = await response.json()
+            let firstDateCreated = new Date(data[0].created_at)
+    
+            if (dateInRange(firstDateCreated)) {
+                page ++
+            } else {
+                return page-1
+            }
         }
+    }
+
+    let getPageEntries2 = async (id, request, page) => {
+        let response = await fetchData(id, `${request}?page=${page}&per_page=20`)
+        let data = await response.json()
+        let numEntries = await getPageEntriesBeforeDate(data)
+        if (numEntries == -1) {
+            return 0
+        } 
+        return numEntries
+    }
+
+    
+
+    let getPageEntriesBeforeDate = async (data) => {
+        return data.filter((entry) => {
+            let d = new Date(entry.created_at)
+            return (dateInRange(d))
+        }).length
     }
 
     let getPageEntries = async (id, request, page) => {
@@ -47,11 +81,19 @@ let RepositoryPanel = ({id, request}) => {
     }
 
     let getRepoStat = async (id, request) => {
-        let fullPages = await getFullPages(id, request)
-        let lastPageEntries = await getPageEntries(id, request, fullPages+1)
-        let statistic = (fullPages * 100) + lastPageEntries
+        let pagesInRange = await getPagesInRange(id, request)
+        let statistic, lastPageEntries
+        
+        if (pagesInRange == 0) {
+            statistic = 0
+            setStat(statistic)
+        } else {
+            lastPageEntries = await getPageEntries2(id, request, pagesInRange)
+            statistic = ((pagesInRange-1) * 20) + lastPageEntries
+            setStat(statistic)
+        }
 
-        console.log("Full Pages: " + fullPages)
+        console.log("Full Pages: " + pagesInRange)
         console.log("Entries on last page: " + lastPageEntries)
         setStat(statistic)
     }

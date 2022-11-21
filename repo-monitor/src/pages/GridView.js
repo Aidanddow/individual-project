@@ -6,6 +6,9 @@ let GridView = () => {
     let [repos, setRepos] = useState([])
     let [request, setRequest] = useState("")
     let [requests, setRequests] = useState(new Map())
+
+    let [periods, setPeriods] = useState(new Map())
+    let [period, setPeriod] = useState(new Date())
     let [newID, setNewID] = useState([])
     
     useEffect(() => {
@@ -16,10 +19,19 @@ let GridView = () => {
         reqs.set("Merge Requests", "merge_requests")
         setRequests(reqs)
 
+        let periods = new Map()
+        const now = new Date();
+        periods.set("1 Week", new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7))
+        periods.set("1 Month", new Date(now.getFullYear(), now.getMonth()-1, now.getDate()))
+        periods.set("1 Year", new Date(now.getFullYear()-1, now.getMonth(), now.getDate()))
+        periods.set("All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate()))
+        setPeriods(periods)
+
         const initialRepos = JSON.parse(localStorage.getItem("ids"))
         setRepos(initialRepos)
         
         setRequest("repository/commits")
+        setPeriod(periods.get("All-Time"))
     }, [])
 
     useEffect(() => {
@@ -63,10 +75,20 @@ let GridView = () => {
 
                         </div>
 
+                        <div className="col">
+                            {[...periods.keys()].map((name) => (
+                                <button onClick={() => {setPeriod(periods.get(name)) }} 
+                                className={`btn btn-outline-primary 
+                                    ${period===periods.get(name) && "active"}`}>
+                                        {name}
+                                </button>
+                            ))}
+                        </div>
+
                     </div>
                     
                   
-                    <RepositoryGrid request={request} repos={repos}/>
+                    <RepositoryGrid request={request} repos={repos} period={period}/>
                  
 
                 </div>
