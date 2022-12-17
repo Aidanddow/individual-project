@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import RepositoryGrid from "../components/RepositoryGrid";
 import RepositoryList from "../components/RepositoryList";
 
+
 let GridView = () => {
    
     let [repos, setRepos] = useState([])
@@ -68,6 +69,10 @@ let GridView = () => {
 
             <div className="col-9">
                 <div className="container-fluid">
+                    
+                    <div className="row">
+                        <h1 className="title">Repository Grid</h1>
+                    </div>
 
                     <div className="row">
                         <div className="col-8">
