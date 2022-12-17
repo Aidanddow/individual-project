@@ -17,7 +17,8 @@ let ShowDiff = ( {diffStr} ) => {
                     </ul>
                     <br />
                 </li>
-            ))}
+            )) 
+        }
             
         </ul>
     )

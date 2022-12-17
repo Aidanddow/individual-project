@@ -13,9 +13,9 @@ let RepositoryGrid = ({request, repos, period}) => {
     }, [request]);
 
     return (
-        <div className="row">
+        <div className="cards">
             {repos.map((repo, index) => (
-                <div key={`repository${index}`} className="col">
+                <div key={`repository${index}`}>
                     <RepositoryPanel id={repo} request={request} period={period}/>
                 </div>
             ))}

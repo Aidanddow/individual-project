@@ -5,9 +5,10 @@ import './index.css';
 import App from './App'
 import Home from './pages/Home'
 import Repository from './pages/Repository'
-import RepositoryList from './pages/RepositoryList'
 import Commit from './pages/Commit'
+import Developer from './pages/Developer'
 import GridView from './pages/GridView'
+import SetToken from "./pages/SetToken"
 import Navbar from './components/Navbar'
 import reportWebVitals from './reportWebVitals';
 
@@ -20,7 +21,8 @@ root.render(
       <Route path="repository/:id" element={<Repository />} />
       <Route path="repository/:id/commit/:sha" element={<Commit />} />
       <Route path="repositorygrid/" element={<GridView />} />
-      <Route path="repositorylist/" element={<RepositoryList />} />
+      <Route path="settoken/" element={<SetToken />} />
+      <Route path="developer/:id" element={<Developer />} />
     </Routes>
   </BrowserRouter>
 

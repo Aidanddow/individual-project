@@ -1,37 +1,39 @@
 
 import { useEffect, useState } from "react"
 import RepositoryGrid from "../components/RepositoryGrid";
+import RepositoryList from "../components/RepositoryList";
 
 let GridView = () => {
+   
     let [repos, setRepos] = useState([])
     let [request, setRequest] = useState("")
-    let [requests, setRequests] = useState(new Map())
 
-    let [periods, setPeriods] = useState(new Map())
+    const [requests] = useState(new Map([
+        ["Commits", "repository/commits"],
+        ["Issues", "issues"],
+        ["Merge Requests", "merge_requests"],
+        ["Pipeline Passes", "pipelines"],
+        ["Last Commit", "last-commit"]
+    ]))
+
+    const now = new Date();
+    let [periods, setPeriods] = useState(new Map([
+        ["1 Week", new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)],
+        ["1 Month", new Date(now.getFullYear(), now.getMonth()-1, now.getDate())],
+        ["1 Year", new Date(now.getFullYear()-1, now.getMonth(), now.getDate())],
+        ["All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate())],
+    ]))
+                                                
+    // let [periods, setPeriods] = useState(new Map())
     let [period, setPeriod] = useState(new Date())
     let [newID, setNewID] = useState([])
     
     useEffect(() => {
-        let reqs = new Map()
-        reqs.set("Commits", "repository/commits")
-        reqs.set("Issues", "issues")
-        reqs.set("Branches", "repository/branches")
-        reqs.set("Merge Requests", "merge_requests")
-        setRequests(reqs)
-
-        let periods = new Map()
-        const now = new Date();
-        periods.set("1 Week", new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7))
-        periods.set("1 Month", new Date(now.getFullYear(), now.getMonth()-1, now.getDate()))
-        periods.set("1 Year", new Date(now.getFullYear()-1, now.getMonth(), now.getDate()))
-        periods.set("All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate()))
-        setPeriods(periods)
-
         const initialRepos = JSON.parse(localStorage.getItem("ids"))
         setRepos(initialRepos)
         
         setRequest("repository/commits")
-        setPeriod(periods.get("All-Time"))
+        setPeriod(periods.get("1 Week"))
     }, [])
 
     useEffect(() => {
@@ -46,24 +48,29 @@ let GridView = () => {
         event.preventDefault();
         setRepos([...repos, newID])
         setNewID([null])
-        
-        console.log("REPOS: " + repos)
     }
-    
+
+    let clearGrid = () => {
+        
+        localStorage.setItem("ids", "[]")   
+        setRepos([])
+    }
+
+    let handleChange = (event) => {
+        setPeriod(new Date(event.target.value))
+    }
+
     return (
         <div className="repository-grid container-fluid">
+            
+            <div className="repoGrid">
             <div className="row">
-            <div className="col-2"></div>
 
-            <div className="col-8">
+            <div className="col-9">
                 <div className="container-fluid">
-                    
-                    <div className="row">
-                        <h1 className="title">Repository Grid</h1>
-                    </div>
 
                     <div className="row">
-                        <div className="col">
+                        <div className="col-8">
 
                             {[...requests.keys()].map((name) => (
                                 <button onClick={() => {setRequest(requests.get(name)) }} 
@@ -72,28 +79,45 @@ let GridView = () => {
                                         {name}
                                 </button>
                             ))}
-
                         </div>
 
-                        <div className="col">
-                            {[...periods.keys()].map((name) => (
-                                <button onClick={() => {setPeriod(periods.get(name)) }} 
-                                className={`btn btn-outline-primary 
-                                    ${period===periods.get(name) && "active"}`}>
-                                        {name}
-                                </button>
-                            ))}
+                        <div className="col-2">
+                            <select id="dropdown" onChange={handleChange} class="form-select" aria-label="Default select example">
+                                {[...periods.keys()].map((name) => (
+                                    <option value={periods.get(name)}>{name}</option>
+                                ))}
+
+
+                            
+                            </select>
+                        </div>
+
+                        <div className="col-2">
+                            <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
                         </div>
 
                     </div>
-                    
-                  
-                    <RepositoryGrid request={request} repos={repos} period={period}/>
-                 
+                            
+                   
 
-                </div>
+                    {repos.length != 0 ? 
+                        <RepositoryGrid request={request} repos={repos} period={period}/> 
+                    : 
+                    <div className="no-repos">
+                        <h3>
+                            You currently have no repositories in the grid!
+                        </h3>
+                        <h5>
+                            Add repository by ID, or by search!
+                        </h5>
+                        </div>
+                    }   
+
+                    </div>
             </div>
-            <div className="col-2"></div> 
+            <div className="col-3">
+                <RepositoryList gridRepos={repos} setGridRepos={setRepos}/>
+            </div> 
             </div>
 
 
@@ -108,7 +132,9 @@ let GridView = () => {
             
                 <button onClick={handleSubmit} className="btn btn-primary gotorepo">Add</button>
             </div>
-            
+            </div>
+    
+      
         </div>
         
     )

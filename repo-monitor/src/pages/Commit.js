@@ -2,11 +2,12 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom";
 import ShowDiff from '../components/ShowDiff'
+import { getJsonData, fetchData, getUrl } from "../utils.js"
 
 let Commit = () => {
     const { id, sha } = useParams()
 
-    let [diff, setDiff] = useState([])
+    let [diff, setDiff] = useState(null)
     let [commit, setCommit] = useState([])
 
     useEffect(() => {
@@ -16,50 +17,67 @@ let Commit = () => {
         getDiff(id, sha)
     }, [])
 
-    let getCommitUrl = (id, sha, request) => {
-        return `https://stgit.dcs.gla.ac.uk/api/v4//projects/${id}/repository/commits/${sha}/${request}`
-    }
-
-    let fetchData = async (id, sha, request) => {
-        let requestUrl = getCommitUrl(id, sha, request)
-        let response = await fetch(requestUrl, {
-            headers: {
-                "PRIVATE-TOKEN": "glpat-N7BrBvPV3CqT2Unn1-Zh"
-            }
-        })
-        let data = await response.json()
-        return data
+    let getCommitRequest = (id, sha, request) => {
+        return `repository/commits/${sha}/${request}`
     }
 
     let getDiff = async (id, sha) => {
-        const data = await fetchData(id, sha, "diff")
+        let request = getCommitRequest(id, sha, "diff")
+        const data = await getJsonData(id, request)
         console.log(data)
        
         setDiff(data)
     }
 
     let getCommit = async (id, sha) => {
-        const data = await fetchData(id, sha, "")
-        setCommit(data)
+        let request = getCommitRequest(id, sha, "")
+        console.log("REQ: ", request)
+        const response = await fetchData(id, request)
+        
+        if (response.ok) {
+            let data = await response.json()
+            console.table(data)
+
+            if (!data.stats) {
+                console.log("ERROR")
+            } else {
+                console.log("SUCCESS")
+                console.log(data.message)
+                setCommit(data)
+            }
+
+        } else {
+            console.log("ERROR!")
+        }
     }
 
     let formatTime = (timeStr) => {
-        return timeStr.substring(0,10)
+        return timeStr? timeStr.substring(0,10) : timeStr
     }
 
+
     return (
-        <div class="container-fluid">
+        <div className="container-fluid">
             
             <h1>Commit Diff</h1>
-            
+            {commit.length == 0 ? 
+            <h2>Commit info not found.</h2> :
+            <>
             <Link to={`/repository/${id}`} className="btn btn-outline-primary">Back to Repository</Link>
-            {/* <h4>Written by {commit.author_name} on {formatTime(commit.authored_date)}</h4> */}
-            {/* <h5>This commit has {commit.stats.additions} additions, {commit.stats.deletions} deletions, and {commit.stats.total} total</h5> */}
+            <h3>{commit.message}</h3>
+            <h4>Written by {commit.author_name} on {formatTime(commit.authored_date)}</h4> 
+            <h5>This commit has {commit.stats.additions} additions, {commit.stats.deletions} deletions, and {commit.stats.total} total</h5>
+            </>
+            }
             
-            <ShowDiff diffStr={diff}/>
 
+            {diff ? <ShowDiff diffStr={diff}/> : (<h3>LOADING...</h3>)}
+            
         </div>
     )
 }
 
 export default Commit
+    
+    
+    

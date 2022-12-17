@@ -27,8 +27,8 @@ let Navbar = (props) => {
                     </li>
 
                     <li className="nav-item">
-                        <Link to="/repositorylist" className="nav-link">
-                            Repository Search
+                        <Link to="/settoken" className="nav-link">
+                            Tokens
                         </Link>
                     </li>
 

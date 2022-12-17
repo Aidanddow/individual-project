@@ -1,37 +1,56 @@
 
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
+import { fetchData, getJsonData, getDaysSinceCommit } from "../utils.js"
+import pipelinePass from '../pipeline-pass.png'
+import pipelineFail from '../pipeline-fail.png'
+import noPipeline from '../no-pipeline.png'
+
 
 
 let RepositoryPanel = ({id, request, period}) => {
 
     let [repoName, setRepoName] = useState([])
-    let [stat, setStat] = useState([])
+    let [repoAuthor, setRepoAuthor] = useState([])
+    let [stat, setStat] = useState("...")
     
     useEffect(() => {
         setStat("...")
-        console.log("PERIODDDDDDDD: " + period)
+        // console.log("PERIODDDDDDDD: " + period)
         getRepoName(id)
-        getRepoStat(id, request)
+        // console.log("REQ: ", request)
+
+        if (request == "pipelines") {
+            getPipelineStat(id)
+        } else if (request == "last-commit") {
+            getLastCommit(id)
+        } else {
+            getRepoStat(id, request)
+        }
+        
     }, [request, period])
-
-    let getUrl = (id, request) => {
-        return `https://stgit.dcs.gla.ac.uk/api/v4//projects/${id}/${request}`
-    }
-
-    let fetchData = async (id, request) => {
-        let requestUrl = getUrl(id, request)
-        let response = await fetch(requestUrl, {
-            headers: {
-                "PRIVATE-TOKEN": "glpat-N7BrBvPV3CqT2Unn1-Zh"
-            }
-        })
-        return response
-    }
 
     let dateInRange = (d) => {
         let dateFilter = period
         return (d >= dateFilter)
+    }
+
+    let getLastCommit = async (id) => {
+
+        let data = await getJsonData(id, "repository/commits")
+        let statistic = getDaysSinceCommit(data[0].created_at)
+        setStat(statistic + " days")
+    }
+    
+
+    let getPipelineStat = async (id) => {
+        let data = await getJsonData(id, "pipelines")
+        // console.log("DATA: ", data)
+        if (data.length == 0) {
+            setStat("no-pipeline")
+        } else {
+            setStat("pipeline-pass")
+        }
     }
     
     let getPagesInRange = async (id, request) => {
@@ -64,8 +83,6 @@ let RepositoryPanel = ({id, request, period}) => {
         return numEntries
     }
 
-    
-
     let getPageEntriesBeforeDate = async (data) => {
         return data.filter((entry) => {
             let d = new Date(entry.created_at)
@@ -93,8 +110,8 @@ let RepositoryPanel = ({id, request, period}) => {
             setStat(statistic)
         }
 
-        console.log("Full Pages: " + pagesInRange)
-        console.log("Entries on last page: " + lastPageEntries)
+        // console.log("Full Pages: " + pagesInRange)
+        // console.log("Entries on last page: " + lastPageEntries)
         setStat(statistic)
     }
 
@@ -104,20 +121,47 @@ let RepositoryPanel = ({id, request, period}) => {
         
         console.log("NAME: ", dataJson.name)
         setRepoName(dataJson.name)
+        setRepoAuthor(dataJson.namespace.name)
     }
 
     return (
         <div className="card">
+            
             <Link to={`/repository/${id}`} className='repo-title'>
                 <div className="card-header">
-                <h6 className="repo-title">{!Number.isNaN(stat) ? repoName : "Not Found"}</h6>
+                    {!Number.isNaN(stat) ? 
+                    <div className="name-and-author">
+                        <h6 className="repo-title">{ repoName }</h6>
+                        
+                        <p className="repo-title">
+                        {repoAuthor.length <26 ? 
+                            <>{repoAuthor}</>  : <>{repoAuthor.substring(0, 20)}...</>
+                        }
+                        </p>
+                        
+
+                    
+                    </div>: <></> }
                 </div>
             </Link>
+            
             <div className="card-body">
-                <h2 className="commits">{!Number.isNaN(stat) ? stat : "-"}</h2>
-            </div>
+                <h2 className="commits">
+                
+                { request === "pipelines" ?
 
-            <button className="btn btn-sm btn-outline-danger">Delete</button>
+                <img src={ stat == "pipeline-pass" ? pipelinePass : stat == "pipeline-fail" ? pipelineFail : noPipeline} className="pipeline-logo"/>
+                
+                :
+                !Number.isNaN(stat) ? stat : "-"
+            } 
+                    
+                
+                </h2>
+                <use href="/assets/icons-7b0fcccb8dc2c0d0883e05f97e4678621a71b996ab2d30bb42fafc906c1ee13f.svg#status_success"></use>
+            </div>
+{/* 
+            <button className="btn btn-sm btn-outline-danger">Delete</button> */}
             
             
         </div>

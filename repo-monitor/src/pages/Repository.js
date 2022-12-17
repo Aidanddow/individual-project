@@ -2,69 +2,134 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { fetchData, getJsonData, getUrl, fetchUrl, fetchSearch, getDaysSinceCommit } from "../utils.js"
+
+
+let Developer = class {
+
+    constructor(name) {
+        this.name = name
+        this.commits = 0
+        this.lastCommitDate = ""
+    }
+
+    addCommit = (commit) => {
+        this.commits ++
+        
+        if (this.lastCommitDate == ""){
+            this.lastCommitDate = commit.created_at
+        }
+        
+        return this
+        // "2022-04-04T11:06:11.000+01:00"
+    }
+
+    // get getName() {
+    //     return this.name
+    // }
+
+    getLastCommitDate = () => {
+        return new Date(this.lastCommitDate)
+    }
+
+    // get numCommits() {
+    //     return this.commits
+    // }
+
+
+}
 
 let Repository = () => {
 
     const { id } = useParams()
-    let [loading, setLoading] = useState(false)
+    let [loading, setLoading] = useState(true)
     let [repoInfo, setRepoInfo] = useState([])
-
     let [commits, setCommits] = useState([])
-
-    let [curPage, setCurPage] = useState(1)
-    let [nextPage, setNextPage] = useState(2)
-
-    let [developers, setDevelopers] = useState([])
+    let [commitsLoaded, setCommitsLoaded] = useState(false)
+    let [issues, setIssues] = useState([])
+    let [curPage, setCurPage] = useState(0)
+    let [developers, setDevelopers] = useState(new Map())
     
     useEffect(() => {
-        setLoading(true)
-        getRepoInfo(id)
-        getRepoCommits(id, 1)
-        getDevelopers()
-        console.log("Developers: " + developers)
-        setLoading(false)
+        /* Defining an async function allows await to be used in useEffect */
+        let r = async () => {
+            getRepoIssues(id)
+            console.log("I've been called")
+            getRepoInfo(id)
+            await getRepoCommits(id)
+            setLoading(false)
+        }
+
+        r()
+
+        // let d = new Developer("Aidan Dow")
     }, [])
 
     useEffect(() => {
-        getRepoCommits(id, curPage)
-        console.log("Commits now has " + commits.length)
-    }, [curPage])
-
-    let getUrl = (id, request) => {
-        return `https://stgit.dcs.gla.ac.uk/api/v4//projects/${id}/${request}`
-    }
-
-    let fetchData = async (id, request) => {
-        let requestUrl = getUrl(id, request)
-        let response = await fetch(requestUrl, {
-            headers: {
-                "PRIVATE-TOKEN": "glpat-N7BrBvPV3CqT2Unn1-Zh"
-            }
-        })
-        return response
-    }
+        getDevelopers()
+    }, [loading])
 
     let getRepoInfo = async (id) => {
-        let data = await fetchData(id, "")
-        let dataJson = await data.json()
+        let dataJson = await getJsonData(id, "")
         setRepoInfo(dataJson)
     }
 
-    let getRepoCommits = async (id, page) => {
-        let response = await fetchData(id, `repository/commits?with_stats=yes&page=${page}&per_page=50`)
-        let data = await response.json()
+    let getRepoCommits = async (id) => {
+        let data = await getJsonData(id, `repository/commits?with_stats=yes&page=1&per_page=100`)
+        let newData
+        let i = 2
         
-        setNextPage(response.headers.get("x-next-page"))
-        setCommits(commits.concat(data))
-        console.log("COmmits: " + commits)
+        do { 
+            data = data.concat(newData)
+            setCommits([...data])
+
+            i++
+            newData = await getJsonData(id, `repository/commits?with_stats=yes&page=${i}`)
+            
+        } while (!(Object.keys(newData).length === 0))
+
+        setCommits(data.filter((commit) => commit != null))
+    }
+
+
+    let getRepoIssues = async (id) => {
+        console.log("get issues")
+        let data = await getJsonData(id, `issues?page=1&per_page=20`)
+        console.log("DATAAA: " )
+        console.table(data)
+        let newData
+        let i = 2
+        
+        do { 
+            data = data.concat(newData)
+            setIssues([...data])
+
+            i++
+            newData = await getJsonData(id, `issues?page=${i}&per_page=20`)
+            
+        } while (!(Object.keys(newData).length === 0))
+
+        setIssues(data.filter((issue) => issue != null))
     }
 
     let getDevelopers = () => {
-        let devsList = commits.map((commit) => commit.author_name);
-        let devsSet = new Set()    
-        devsList.forEach((dev) => devsSet.add(dev))
-        let devs = Array.from(devsSet)
-        setDevelopers(devs)
+        let devsMap = new Map()
+        
+        commits.forEach((commit) => {
+            let dev = commit.author_name
+            
+            if (!devsMap.has(dev)) {
+                let a = new Developer( dev );
+                devsMap.set(dev, a)
+            }
+
+            let d = devsMap.get(dev)
+            console.log("DEV: ", d)
+            d.addCommit(commit)
+        })
+
+        setDevelopers(devsMap)
+        console.log("Devsmap: ", devsMap)
     }
 
     let formatTime = (timeStr) => {
@@ -80,22 +145,71 @@ let Repository = () => {
            
             <h1 className="title">Repository - {repoInfo.name_with_namespace}</h1>
             
-            {/* <h3>Developers</h3>
-            <ul className="member-list">
 
-                {developers.map((developer, index) => (
-                    <li>
-                        {developer}
-                    </li>
-                ))}
+            <div className="row">
+                <div className="col-5">
+                <table className="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Developers</th> 
+                        <th>Commits</th>
+                        <th>Contribution %</th>
+                        <th>Last Commit</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {loading ? 
+                        <tr><td>Loading...</td><td></td><td></td><td></td></tr> : 
+                
+                    [...developers.keys()].sort()
+                        .map(dev => developers.get(dev))
+                        .map((developer, index) => (
+                            <tr>
+                                <td>
+                                    {developer.name}
+                                </td>
 
-            </ul> */}
+                                <td>
+                                    {developer.commits}
+                                </td>
+
+                                <td>
+                                    {(100 * developer.commits / commits.length).toFixed(1)}%
+                                </td>
+
+                                <td>
+                                    {getDaysSinceCommit(developer.lastCommitDate)} days ago
+                                </td>
+                                
+                            </tr>
+                    ))
+                }
+                    </tbody>
+
+                </table>
+                </div> 
+
+
+                <div className="col-2">
+                <table className="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Issues</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {loading ? 
+                        <tr><td>Loading...</td></tr> : 
+                        <tr><td>{issues.length}</td></tr>
+                    }
+                    </tbody>
+
+                </table>
+                </div> 
+            </div>
+            
 
             <h2>Commits</h2>
-
-            {loading ? 
-            <h1>Loading...</h1> : 
-            
             
             <table className="table table-hover table-bordered">
                 <thead>
@@ -109,7 +223,10 @@ let Repository = () => {
                 </thead>
                 
                 <tbody>
-                    {commits.map((commit, index) => (
+                {commits.filter((commit) => {
+                        return (commit != null) 
+                          
+                    }).map((commit, index) => (
                         
                         <tr>
                             <td key={`time${index}`}>
@@ -136,10 +253,10 @@ let Repository = () => {
                 </tbody>
                 
             </table>
-        }
-        {nextPage && 
+        
+        {/* {nextPage && 
             <button onClick={() => setCurPage(curPage + 1)} className="btn btn-outline-primary">Load More</button>
-        }
+        } */}
                
         </div>
     )
