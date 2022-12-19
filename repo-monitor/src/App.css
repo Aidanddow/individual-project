@@ -173,6 +173,7 @@ table {
 }
 
 .card{
+
   border-radius: 4px;
   background: #fff;
   max-width:300px;
@@ -205,4 +206,36 @@ table {
 
 #red{
   background-color: rgba(255, 3, 3, 0.12);
+}
+
+
+
+
+.hovertext {
+  position: relative;
+
+  z-index: 9;
+}
+
+.hovertext:before {
+  content: attr(data-hover);
+  visibility: hidden;
+  opacity: 0;
+  width: 140px;
+  background-color: rgba(0, 0, 0, 0.824);
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px 0;
+  transition: opacity 0.2s ease-in-out;
+
+  position: absolute;
+  z-index: 9;
+  left: 0;
+  top: 110%;
+}
+
+.hovertext:hover:before {
+  opacity: 1;
+  visibility: visible;
 }

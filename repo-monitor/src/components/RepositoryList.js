@@ -1,7 +1,7 @@
 
 import { useState } from "react"
 import { Link } from "react-router-dom";
-import { fetchSearch, fetchData } from "../utils.js"
+import { fetchSearch, fetchData, getJsonData } from "../utils.js"
 
 let RepositoryList = ( {gridRepos, setGridRepos} ) => {
 
@@ -47,13 +47,29 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
             setGridRepos([...gridRepos, id])
             return
         }
-        
-        let response = await fetchData(id, "projects", "groups")
 
-        let groupProjects = await response.json()
+        // let groupProjects = await recursGroup(id)
+        
+        let groupProjects = await getJsonData(id, "projects?include_subgroups=true", "groups")
+        // let response = await fetchData(id, "projects", "groups")
+
+        // let groupProjects = await response.json()
 
         setGridRepos([...gridRepos, ...groupProjects.map( project => project.id.toString() )])
     }
+
+    // let recursGroup = async (id) => {
+    //     let subgroups = await getJsonData(id, "subgroups", "groups")
+
+    //     console.log("SUBGROUPS: ", subgroups.map(group => group.name))
+
+    //     if (subgroups.length == 0) {
+    //         let projects = await fetchData(id, "projects", "groups")
+    //         return projects
+    //     }
+
+    //     return subgroups.forEach(group => recursGroup(group.id))
+    // }
 
     let addAll = () => {
         console.log("IDDSSSSSS: ", results)
@@ -118,7 +134,7 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
                                     {repo.name}    
                                 
                             </Link> 
-                            <button onClick={event => addToGrid(event, repo.id)} className="btn btn-outline-primary btn-sm" id="btn-add-to-grid">Add</button>
+                            <button onClick={event => addToGrid(event, repo.id)} className="btn btn-outline-primary btn-sm" id="btn-add-to-grid">Add{searchSection == "groups"?" Projects":""}</button>
                         
                     </li>
                 ))}

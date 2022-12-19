@@ -15,13 +15,14 @@ let GridView = () => {
         ["Issues", "issues"],
         ["Merge Requests", "merge_requests"],
         ["Pipeline Passes", "pipelines"],
-        ["Last Commit", "last-commit"]
+        ["Last Commit (Days)", "last-commit"]
     ]))
 
     const now = new Date();
     let [periods, setPeriods] = useState(new Map([
         ["1 Week", new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)],
         ["1 Month", new Date(now.getFullYear(), now.getMonth()-1, now.getDate())],
+        ["3 Months", new Date(now.getFullYear(), now.getMonth()-3, now.getDate())],
         ["1 Year", new Date(now.getFullYear()-1, now.getMonth(), now.getDate())],
         ["All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate())],
     ]))

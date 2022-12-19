@@ -41,7 +41,7 @@ let RepositoryPanel = ({id, request, period, showHeaders}) => {
 
         let data = await getJsonData(id, "repository/commits")
         let statistic = getDaysSinceCommit(data[0].created_at)
-        setStat(statistic + " days")
+        setStat(statistic)
     }
     
 
@@ -127,12 +127,13 @@ let RepositoryPanel = ({id, request, period, showHeaders}) => {
     }
 
     return (
-        
+        <Link to={`/repository/${id}`} className='repo-title'>
         <div className="card" id={showHeaders? "card-headers-on" : "card-headers-off" }>
+        <span className="hovertext" data-hover={`${repoName} - ${repoAuthor}`}>
             {/* <div id={stat > 5? 'green' : 'red'}> */}
             
             {showHeaders ? 
-            <Link to={`/repository/${id}`} className='repo-title'>
+            
                 <div className="card-header">
                     {!Number.isNaN(stat) ? 
                     <div className="name-and-author">
@@ -145,7 +146,7 @@ let RepositoryPanel = ({id, request, period, showHeaders}) => {
                         </p>
                     </div>: <></> }
                 </div>
-            </Link> : <></>
+             : <></>
             }
             
             <div className="card-body">
@@ -167,7 +168,9 @@ let RepositoryPanel = ({id, request, period, showHeaders}) => {
             <button className="btn btn-sm btn-outline-danger">Delete</button> */}
             
             {/* </div>     */}
+            </span>
         </div>
+        </Link>
     )
 }
 
