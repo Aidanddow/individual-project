@@ -95,9 +95,9 @@ let SetTokenModal = () => {
                 </li>
 
 
-                <li>
+                {/* <li>
                     glpat-N7BrBvPV3CqT2Unn1-Zh
-                </li>
+                </li> */}
             </ol>
 
         </div>
