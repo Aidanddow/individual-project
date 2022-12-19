@@ -26,7 +26,6 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
             console.log("ID: " + proj.id)
             return proj.id
         })
-           
         return data
     }
 
@@ -62,6 +61,17 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
         setGridRepos([...gridRepos, ...results.map(result => result.id.toString())])
     }
 
+    const handleKeyDown = async event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+
+          console.log('User pressed Enter ✅');
+          console.log("SEARCH FOR: ", searchTerm)
+          let newRepos = await searchRepos(searchTerm)
+          setResults([...newRepos])
+        }
+      };
+
     return (
         <div>
             <h2>Search</h2>
@@ -79,6 +89,7 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
                 <form>
                     <input onSubmit={handleSubmit}
                         onChange={handleInputChange }
+                        onKeyDown={handleKeyDown}
                         value={searchTerm}
                         placeholder={`Search for ${searchSection}`}
                         name="Repository ID"/>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react"
 import RepositoryPanel from "./RepositoryPanel";
 
-let RepositoryGrid = ({request, repos, period}) => {
+let RepositoryGrid = ({request, repos, period, showHeaders}) => {
 
     let [req, setReq] = useState([])
 
@@ -13,10 +13,10 @@ let RepositoryGrid = ({request, repos, period}) => {
     }, [request]);
 
     return (
-        <div className="cards">
+        <div className={showHeaders? "cards-headers" : "cards-no-headers"}>
             {repos.map((repo, index) => (
                 <div key={`repository${index}`}>
-                    <RepositoryPanel id={repo} request={request} period={period}/>
+                    <RepositoryPanel id={repo} request={request} period={period} showHeaders={showHeaders}/>
                 </div>
             ))}
                         

@@ -39,15 +39,6 @@ table {
   margin-left: 10px;
 }
 
-.card {
-  margin-bottom:10px;
-  max-width:300px;
-  min-width:150px;
-  
-  text-align: center;
-  object-fit: contain;
-}
-
 .links {
   list-style: none;
 }
@@ -118,12 +109,6 @@ table {
   justify-content: center;
 }
 
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
 
 .modal {
   position: fixed;
@@ -174,4 +159,50 @@ table {
 
 .pipeline-logo {
   height:50px;
+}
+
+#card-headers-on {
+
+  max-width:300px;
+  min-width:150px;
+}
+
+#card-headers-off {
+  min-width:120px;
+  max-width:150px;
+}
+
+.card{
+  border-radius: 4px;
+  background: #fff;
+  max-width:300px;
+  text-align: center;
+  object-fit:contain;
+  cursor: pointer;
+}
+
+.card:hover{
+   transform: scale(1.05);
+   box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+   transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
+}
+
+.cards-headers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 2fr));
+  gap: 20px;
+}
+
+.cards-no-headers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 20px;
+}
+
+#green {
+  background-color: rgba(3, 255, 3, 0.12);
+}
+
+#red{
+  background-color: rgba(255, 3, 3, 0.12);
 }

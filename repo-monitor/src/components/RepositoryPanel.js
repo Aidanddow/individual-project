@@ -8,11 +8,12 @@ import noPipeline from '../no-pipeline.png'
 
 
 
-let RepositoryPanel = ({id, request, period}) => {
+let RepositoryPanel = ({id, request, period, showHeaders}) => {
 
     let [repoName, setRepoName] = useState([])
     let [repoAuthor, setRepoAuthor] = useState([])
     let [stat, setStat] = useState("...")
+    let [good, setGood] = useState(true)
     
     useEffect(() => {
         setStat("...")
@@ -28,6 +29,7 @@ let RepositoryPanel = ({id, request, period}) => {
             getRepoStat(id, request)
         }
         
+        setGood(stat > 5)
     }, [request, period])
 
     let dateInRange = (d) => {
@@ -125,8 +127,11 @@ let RepositoryPanel = ({id, request, period}) => {
     }
 
     return (
-        <div className="card">
+        
+        <div className="card" id={showHeaders? "card-headers-on" : "card-headers-off" }>
+            {/* <div id={stat > 5? 'green' : 'red'}> */}
             
+            {showHeaders ? 
             <Link to={`/repository/${id}`} className='repo-title'>
                 <div className="card-header">
                     {!Number.isNaN(stat) ? 
@@ -134,16 +139,14 @@ let RepositoryPanel = ({id, request, period}) => {
                         <h6 className="repo-title">{ repoName }</h6>
                         
                         <p className="repo-title">
-                        {repoAuthor.length <26 ? 
+                        {repoAuthor.length < 26 ? 
                             <>{repoAuthor}</>  : <>{repoAuthor.substring(0, 20)}...</>
                         }
                         </p>
-                        
-
-                    
                     </div>: <></> }
                 </div>
-            </Link>
+            </Link> : <></>
+            }
             
             <div className="card-body">
                 <h2 className="commits">
@@ -163,7 +166,7 @@ let RepositoryPanel = ({id, request, period}) => {
 {/* 
             <button className="btn btn-sm btn-outline-danger">Delete</button> */}
             
-            
+            {/* </div>     */}
         </div>
     )
 }

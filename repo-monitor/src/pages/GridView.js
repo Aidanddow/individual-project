@@ -8,6 +8,7 @@ let GridView = () => {
    
     let [repos, setRepos] = useState([])
     let [request, setRequest] = useState("")
+    let [showHeaders, setShowHeaders] = useState(false)
 
     const [requests] = useState(new Map([
         ["Commits", "repository/commits"],
@@ -30,11 +31,20 @@ let GridView = () => {
     let [newID, setNewID] = useState([])
     
     useEffect(() => {
-        const initialRepos = JSON.parse(localStorage.getItem("ids"))
-        setRepos(initialRepos)
+
+        let r = async () => {
+            const initialRepos = await JSON.parse(localStorage.getItem("ids"))
+            if (!initialRepos) {
+                localStorage.setItem("ids", "[]")
+                initialRepos = []
+            }
+            setRepos(initialRepos)
+            setRequest("repository/commits")
+            setPeriod(periods.get("1 Week"))
+        }
+
+        r()
         
-        setRequest("repository/commits")
-        setPeriod(periods.get("1 Week"))
     }, [])
 
     useEffect(() => {
@@ -52,13 +62,16 @@ let GridView = () => {
     }
 
     let clearGrid = () => {
-        
         localStorage.setItem("ids", "[]")   
         setRepos([])
     }
 
     let handleChange = (event) => {
         setPeriod(new Date(event.target.value))
+    }
+
+    let toggleHeader = () => {
+        setShowHeaders(!showHeaders)
     }
 
     return (
@@ -98,6 +111,7 @@ let GridView = () => {
                         </div>
 
                         <div className="col-2">
+                            <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
                             <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
                         </div>
 
@@ -106,7 +120,7 @@ let GridView = () => {
                    
 
                     {repos.length != 0 ? 
-                        <RepositoryGrid request={request} repos={repos} period={period}/> 
+                        <RepositoryGrid request={request} repos={repos} period={period} showHeaders={showHeaders}/> 
                     : 
                     <div className="no-repos">
                         <h3>
