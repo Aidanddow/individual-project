@@ -173,7 +173,8 @@ table {
 }
 
 .card{
-
+  z-index: 1;
+  position:relative;
   border-radius: 4px;
   background: #fff;
   max-width:300px;
@@ -186,6 +187,7 @@ table {
    transform: scale(1.05);
    box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
    transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
+   color: black;
 }
 
 .cards-headers {
@@ -208,9 +210,6 @@ table {
   background-color: rgba(255, 3, 3, 0.12);
 }
 
-
-
-
 .hovertext {
   position: relative;
 
@@ -230,7 +229,7 @@ table {
   transition: opacity 0.2s ease-in-out;
 
   position: absolute;
-  z-index: 9;
+  z-index: 2;
   left: 0;
   top: 110%;
 }
