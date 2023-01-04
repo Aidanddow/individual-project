@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
 import { fetchData, getJsonData, getDaysSinceCommit, getUrl, fetchUrl } from "../utils.js"
-import pipelinePass from '../pipeline-pass.png'
-import pipelineFail from '../pipeline-fail.png'
-import noPipeline from '../no-pipeline.png'
+import pipelinePass from '../static/pipeline-pass.png'
+import pipelineFail from '../static/pipeline-fail.png'
+import noPipeline from '../static/no-pipeline.png'
 
 
 let RepositoryPanel = ({id, request, period, showHeaders}) => {

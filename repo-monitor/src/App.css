@@ -37,20 +37,20 @@ table {
   
   margin: 5px;
   vertical-align: middle;
-  height: 18px;
-  width: 18px;
+  height: 22px;
+  width: 36px;
   text-align: center;
   line-height: 0;
   font-size: 24px;
-
+  border: none;
   font-weight: bold;
-  border: 3px solid rgb(80, 80, 80);
-  color: rgb(80, 80, 80);
+  /* border: 3px solid rgb(80, 80, 80); */
+  color: rgb(100, 100, 100);
 }
 
 .btn-add-to-grid:hover {
-  background-color: rgb(80, 80, 80);
-  color: rgb(255, 255, 255);
+  background-color: rgb(100, 100, 100);
+  color: rgb(230, 230, 230);
 }
 
 .repository-search-list {
@@ -402,7 +402,7 @@ table {
 
 .profile-picture {
   height:40px;
-  border-radius: 20px;
+
   border: 1px solid white;
 }
 

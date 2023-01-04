@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react"
-import userProfile from '../user.jpeg'
 import { fetchUrl } from "../utils.js"
+import noUserIcon from "../static/user.png"
 
 let User = () => {
 
@@ -14,16 +14,16 @@ let User = () => {
             let user = await response.json()
             setUser(user)
         }
-
         r()
     }, [])
     
     return (
         <div className="profile pic">
 
-            {user ?
+            {!user.message ?
             <img src={user.avatar_url} className="profile-picture"/>
             :
+            // <img src={noUserIcon} className="profile-picture" />
             <></>
         }
         </div>

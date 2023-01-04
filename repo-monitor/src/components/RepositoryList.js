@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom";
 import { fetchSearch, fetchData, getJsonData } from "../utils.js"
-import searchLogo from '../search.png'
+import searchLogo from '../static/search.png'
 
 let RepositoryList = ( {gridRepos, setGridRepos} ) => {
 
@@ -54,29 +54,10 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
             setGridRepos([...gridRepos, id])
             return
         }
-
-        // let groupProjects = await recursGroup(id)
         
         let groupProjects = await getJsonData(id, "projects?include_subgroups=true", "groups")
-        // let response = await fetchData(id, "projects", "groups")
-
-        // let groupProjects = await response.json()
-
         setGridRepos([...gridRepos, ...groupProjects.map( project => project.id.toString() )])
     }
-
-    // let recursGroup = async (id) => {
-    //     let subgroups = await getJsonData(id, "subgroups", "groups")
-
-    //     console.log("SUBGROUPS: ", subgroups.map(group => group.name))
-
-    //     if (subgroups.length == 0) {
-    //         let projects = await fetchData(id, "projects", "groups")
-    //         return projects
-    //     }
-
-    //     return subgroups.forEach(group => recursGroup(group.id))
-    // }
 
     let addAll = () => {
         console.log("IDDSSSSSS: ", results)
@@ -93,7 +74,7 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
           setResults([...newRepos])
           setLoadingResults(false)
         }
-      };
+    }
 
     return (
         <div className="container-fluid repository-search-list">
