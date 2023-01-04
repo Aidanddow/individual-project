@@ -2,23 +2,26 @@
 import { useState } from "react"
 import { Link } from "react-router-dom";
 import { fetchSearch, fetchData, getJsonData } from "../utils.js"
+import searchLogo from '../search.png'
 
 let RepositoryList = ( {gridRepos, setGridRepos} ) => {
 
     let [results, setResults] = useState([])
     let [searchSection, setSearchSection] = useState("projects")
+
+    let [loadingResults, setLoadingResults] = useState(false)
     
     let [search, setSearch] = useState(1)
 
     let [sections, setSections] = useState(new Map([
-        ["Groups", "groups"],
+        
         ["Projects", "projects"],
+        ["Groups", "groups"],
     ]))
 
     let [searchTerm, setSearchTerm] = useState("")
 
     let searchRepos = async () => {
-        
         let response = await fetchSearch(searchSection, searchTerm)
         let data = await response.json()
 
@@ -26,14 +29,18 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
             console.log("ID: " + proj.id)
             return proj.id
         })
+
         return data
     }
 
     let handleSubmit = async (event) => {
         event.preventDefault();
+        setResults([])
+        setLoadingResults(true)
         let newRepos = await searchRepos(searchTerm)
         console.log("REPOS: " + newRepos)
         setResults([...newRepos]) 
+        setLoadingResults(false)
         
         console.log("REPOS: " + results)
     }
@@ -80,30 +87,38 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
     const handleKeyDown = async event => {
         if (event.key === 'Enter') {
           event.preventDefault();
-
-          console.log('User pressed Enter ✅');
-          console.log("SEARCH FOR: ", searchTerm)
+          setLoadingResults(true);
+          setResults([])
           let newRepos = await searchRepos(searchTerm)
           setResults([...newRepos])
+          setLoadingResults(false)
         }
       };
 
     return (
-        <div>
-            <h2>Search</h2>
+        <div className="container-fluid repository-search-list">
 
+            <div className="row">
+                
+                {[...sections.keys()].map((name) => (
+                    <div className="col">
+                        <button onClick={() => {
+                            setSearchSection(sections.get(name))
+                            setResults([]) 
+                        }} 
+                        className={`metric-button
+                            ${searchSection===sections.get(name) && "active"}`}>
+                                {name}
+                        </button>
+                    </div>
+                ))}
 
-            {[...sections.keys()].map((name) => (
-                <button onClick={() => {setSearchSection(sections.get(name)) }} 
-                className={`btn btn-outline-primary 
-                    ${searchSection===sections.get(name) && "active"}`}>
-                        {name}
-                </button>
-            ))}
+        </div>
 
             <div className="enter-id">
                 <form>
-                    <input onSubmit={handleSubmit}
+                    <input className="repository-search"
+                        onSubmit={handleSubmit}
                         onChange={handleInputChange }
                         onKeyDown={handleKeyDown}
                         value={searchTerm}
@@ -111,34 +126,45 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
                         name="Repository ID"/>
                 </form>
             
-                <button onClick={handleSubmit} className="btn btn-primary gotorepo">Search</button>
+                <button onClick={handleSubmit} className="gotorepo">
+                    {loadingResults ? 
+                        <span className="loader-small"></span> 
+                        : 
+                        <img src={searchLogo} className="search-logo"></img>}
+                </button>
             </div>
 
+            <div className="search-results">
+                <table className="table table-hover results-table">  
+                    
+                    {results.length != 0 && searchSection == "projects"?  
 
-            <ul className="results-list">  
-                {results.length != 0 && searchSection == "projects"?  
-
-                <li>
-                    <button onClick={addAll} className="btn btn-primary">Add All to Grid</button>
-                </li>
-                : <></>
-                }
-                
-                {results.map((repo, index) => (
-                 
-                    <li className="search-result" key={`repository${index}`}>
-                        
+                    <tr className="search-result search-summary">
+                        <tc>{results.length != 0 ? <>Showing: {results.length} results</> : <></>}</tc>
+                        <tc><button onClick={addAll} className="btn btn-outline-primary">Add All</button></tc>
+                    </tr>
+                    : <></>
+                    }
+                    
+                    {results.map((repo, index) => (
+                    
+                        <tr className="search-result" key={`repository${index}`}>
+                            
                             <Link to={`/repository/${repo.id}`}>
-                               
-                                    {/* {searchSection == "groups" ? <>Group:</> : <>Project:</>} */}
-                                    {repo.name}    
-                                
+                                <tc className="result-name">
+                                    {repo.name}
+                                </tc>
                             </Link> 
-                            <button onClick={event => addToGrid(event, repo.id)} className="btn btn-outline-primary btn-sm" id="btn-add-to-grid">Add{searchSection == "groups"?" Projects":""}</button>
-                        
-                    </li>
-                ))}
-            </ul>
+                            
+                            <tc>
+                                <button onClick={event => addToGrid(event, repo.id)} className="btn-add-to-grid">+</button>
+                            </tc>
+                            
+                        </tr>
+                    ))}
+                   
+                </table>
+            </div>
         </div>
     )
 }

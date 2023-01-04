@@ -1,22 +1,39 @@
 
 import { useEffect, useState } from "react"
+import { useNavigate } from 'react-router-dom';
 import RepositoryGrid from "../components/RepositoryGrid";
 import RepositoryList from "../components/RepositoryList";
 
 
+let Metric = class {
+
+    constructor(name, endpoint) {
+        this.name = name
+        this.endpoint = endpoint
+    }
+}
+
+let CountableMetric = class extends Metric {
+    show = () => {
+        return "Hello World"
+    }
+}
+
 let GridView = () => {
    
+    const navigate = useNavigate()
     let [repos, setRepos] = useState([])
     let [request, setRequest] = useState("")
     let [showHeaders, setShowHeaders] = useState(false)
 
-    const [requests] = useState(new Map([
-        ["Commits", "repository/commits"],
-        ["Issues", "issues"],
-        ["Merge Requests", "merge_requests"],
-        ["Pipeline Passes", "pipelines"],
-        ["Last Commit (Days)", "last-commit"]
-    ]))
+    const [requests] = useState([
+        new CountableMetric("Commits", "repository/commits"),
+        new CountableMetric("Open Issues", "issues"),
+        new CountableMetric("Merge Requests", "merge_requests"),
+        new Metric("Merge Comments", "merge_comments"),
+        new Metric("Pipeline Passes", "pipelines"),
+        new Metric("Last Commit (Days)", "last-commit"),
+    ])
 
     const now = new Date();
     let [periods, setPeriods] = useState(new Map([
@@ -32,6 +49,8 @@ let GridView = () => {
     let [newID, setNewID] = useState([])
     
     useEffect(() => {
+
+        checkForToken()
 
         let r = async () => {
             const initialRepos = await JSON.parse(localStorage.getItem("ids"))
@@ -51,6 +70,14 @@ let GridView = () => {
     useEffect(() => {
         localStorage.setItem("ids", JSON.stringify(repos))
     }, [repos])
+
+    let checkForToken = () => {
+        const pat = localStorage.getItem("pat")
+        if (!pat) {
+            navigate("/settoken")
+        }
+    }
+
 
     let handleIdInputChange = (event) => {
         setNewID(event.target.value)
@@ -85,17 +112,27 @@ let GridView = () => {
                 <div className="container-fluid">
                     
                     <div className="row">
-                        <h1 className="title">Repository Grid</h1>
+                        <div className="col-8">
+                            <h1 className="title set-grid-name">Untitled Grid</h1>
+                        </div>
+                        
+                        <div className="col-2">
+                        <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
+                        </div>
+                        
+                        <div className="col-2">
+                            <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
+                        </div>
                     </div>
 
                     <div className="row">
-                        <div className="col-8">
+                        <div className="col-10">
 
-                            {[...requests.keys()].map((name) => (
-                                <button onClick={() => {setRequest(requests.get(name)) }} 
-                                className={`btn btn-outline-primary 
-                                    ${request===requests.get(name) && "active"}`}>
-                                        {name}
+                            {requests.map(req => (
+                                <button onClick={() => {setRequest(req.endpoint) }} 
+                                    className={`metric-button
+                                    ${request===req.endpoint && "active"}`}>
+                                        {req.name}
                                 </button>
                             ))}
                         </div>
@@ -111,26 +148,24 @@ let GridView = () => {
                             </select>
                         </div>
 
-                        <div className="col-2">
-                            <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
-                            <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
-                        </div>
+                  
 
                     </div>
                             
                    
-
                     {repos.length != 0 ? 
+                        <div className="animate">
                         <RepositoryGrid request={request} repos={repos} period={period} showHeaders={showHeaders}/> 
+                        </div>
                     : 
                     <div className="no-repos">
                         <h3>
                             You currently have no repositories in the grid!
                         </h3>
                         <h5>
-                            Add repository by ID, or by search!
+                            Add repositories by searching!
                         </h5>
-                        </div>
+                    </div>
                     }   
 
                     </div>
@@ -139,22 +174,9 @@ let GridView = () => {
                 <RepositoryList gridRepos={repos} setGridRepos={setRepos}/>
             </div> 
             </div>
-
-
-            <div className="enter-id">
-                <form>
-                    <input onSubmit={handleSubmit}
-                        onChange={handleIdInputChange }
-                        value={newID}
-                        placeholder="Add a Repository (ID)"
-                        name="Repository ID"/>
-                </form>
-            
-                <button onClick={handleSubmit} className="btn btn-primary gotorepo">Add</button>
-            </div>
+        
             </div>
     
-      
         </div>
         
     )

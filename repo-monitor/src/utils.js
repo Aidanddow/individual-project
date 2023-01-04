@@ -6,17 +6,13 @@
 
 
 export const getUrl = (id, request, section="projects") => {
-    let url = `https://stgit.dcs.gla.ac.uk/api/v4//${section}/${id}/${request}`
-    // console.log("Getting url: ", url)
     return `https://stgit.dcs.gla.ac.uk/api/v4//${section}/${id}/${request}`
 }
 
 export const fetchSearch = async (section, search) => {
-    let requestUrl =  `https://stgit.dcs.gla.ac.uk/api/v4//${section}?search=${search}`
-    // console.log("URL: ", requestUrl)
+    let requestUrl =  `https://stgit.dcs.gla.ac.uk/api/v4//${section}?search=${search}&per_page=100`
     return fetchUrl(requestUrl)
 }
-
 
 export const fetchData = async (id, request, section="projects") => {
     let requestUrl = getUrl(id, request, section)

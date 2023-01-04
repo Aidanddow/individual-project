@@ -5,7 +5,7 @@ import RepositorySearch from "../components/RepositorySearch"
 
 let Home = () => {
 
-    const navigate = useNavigate()
+    
 
     useEffect(() => {
         checkForToken()

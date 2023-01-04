@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
 import App from './App'
-import Home from './pages/Home'
 import Repository from './pages/Repository'
 import Commit from './pages/Commit'
 import Developer from './pages/Developer'
@@ -16,17 +15,18 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <Navbar />
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="repository/:id" element={<Repository />} />
-      <Route path="repository/:id/commit/:sha" element={<Commit />} />
-      <Route path="repositorygrid/" element={<GridView />} />
-      <Route path="settoken/" element={<SetToken />} />
-      <Route path="developer/:id" element={<Developer />} />
-    </Routes>
+    
+      <Routes>
+        <Route path="/" element={<GridView />} />
+        <Route path="repository/:id" element={<Repository />} />
+        <Route path="repository/:id/commit/:sha" element={<Commit />} />
+        <Route path="grid/" element={<GridView />} />
+        <Route path="settoken/" element={<SetToken />} />
+        <Route path="developer/:id" element={<Developer />} />
+      </Routes>
+    
   </BrowserRouter>
 
-  
 );
 
 // If you want to start measuring performance in your app, pass a function

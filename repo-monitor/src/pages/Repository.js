@@ -35,8 +35,6 @@ let Developer = class {
     // get numCommits() {
     //     return this.commits
     // }
-
-
 }
 
 let Repository = () => {
@@ -94,7 +92,7 @@ let Repository = () => {
 
     let getRepoIssues = async (id) => {
         console.log("get issues")
-        let data = await getJsonData(id, `issues?page=1&per_page=20`)
+        let data = await getJsonData(id, `issues?state=opened&page=1&per_page=20&state=opened`)
         console.log("DATAAA: " )
         console.table(data)
         let newData
@@ -105,7 +103,7 @@ let Repository = () => {
             setIssues([...data])
 
             i++
-            newData = await getJsonData(id, `issues?page=${i}&per_page=20`)
+            newData = await getJsonData(id, `issues?page=${i}&per_page=20&state=opened`)
             
         } while (!(Object.keys(newData).length === 0))
 
@@ -143,7 +141,17 @@ let Repository = () => {
     return (
         <div className="repo-info container-fluid">
            
-            <h1 className="title">Repository - {repoInfo.name_with_namespace}</h1>
+           <div className="row">
+            <div className="col-10">
+                <h1 className="title">{repoInfo.name_with_namespace}</h1>
+            </div>
+
+            <div className="col-2">
+                <a href={repoInfo.http_url_to_repo} target="_blank" className="btn btn-outline-primary view-gitlab-btn">
+                    View on GitLab
+                </a>
+            </div>
+           </div>
             
 
             <div className="row">

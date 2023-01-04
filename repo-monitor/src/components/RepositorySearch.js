@@ -3,7 +3,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react"
 
-let Home = () => {
+let RepositorySearch = () => {
     
     const navigate = useNavigate()
 
@@ -22,6 +22,7 @@ let Home = () => {
         <div className="enter-id">
             <form>
                 <input onSubmit={handleSubmit}
+                    className="input-dark"
                     onChange={handleIdInputChange }
                     value={id}
                     placeholder="Go to a Repository (ID)"
@@ -34,4 +35,4 @@ let Home = () => {
     )
 }
 
-export default Home
+export default RepositorySearch

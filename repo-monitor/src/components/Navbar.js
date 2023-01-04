@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import RepositorySearch from "../components/RepositorySearch"
+import User from "../components/User"
 
 let Navbar = (props) => {
     
@@ -13,15 +14,9 @@ let Navbar = (props) => {
 
             <div className="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul className="navbar-nav ml-auto">
-                    
-                    <li className="nav-item active">
-                        <Link to="/" className="nav-link" >
-                            Home
-                        </Link>
-                    </li>
 
                     <li className="nav-item">
-                        <Link to="/repositorygrid" className="nav-link">
+                        <Link to="/grid" className="nav-link">
                             Grid
                         </Link>
                     </li>
@@ -32,9 +27,17 @@ let Navbar = (props) => {
                         </Link>
                     </li>
 
-                    <li className="navbar-search">
+                    {/* <li className="navbar-search">
                         <RepositorySearch />
+                    </li> */}
+
+                    <li className="navbar-profile">
+                        <Link to="/settoken" className="nav-link">
+                            <User />
+                        </Link>
                     </li>
+
+                    
                 </ul>
             </div>
 

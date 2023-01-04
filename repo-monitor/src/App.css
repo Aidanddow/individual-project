@@ -6,27 +6,25 @@ table, td, th {
     
 }
 
-
 a:link { text-decoration: none; }
 
 h6 {
   white-space: nowrap;
-  font-weight:bold;
 }
 
 table {
   width:50%;
 }
 
-.search-result {
-  border: 1px solid rgb(221, 221, 221);
-  color: black;
+.search-logo {
+  height: 18px;
 }
 
-.search-result-text {
-  color: black;
-
+#dropdown:hover {
+  cursor: pointer;
+  scale: 1.02;
 }
+
 
 .repo-title {
   list-style: none;
@@ -35,9 +33,34 @@ table {
   color:black;
 }
 
-#btn-add-to-grid {
-  margin-left: 10px;
+.btn-add-to-grid {
+  
+  margin: 5px;
+  vertical-align: middle;
+  height: 18px;
+  width: 18px;
+  text-align: center;
+  line-height: 0;
+  font-size: 24px;
+
+  font-weight: bold;
+  border: 3px solid rgb(80, 80, 80);
+  color: rgb(80, 80, 80);
 }
+
+.btn-add-to-grid:hover {
+  background-color: rgb(80, 80, 80);
+  color: rgb(255, 255, 255);
+}
+
+.repository-search-list {
+  border: 1px solid rgb(230, 230, 230);
+  border-radius: 5px;
+  padding:10px;
+  text-align: center;
+  height: 88vh;
+}
+
 
 .links {
   list-style: none;
@@ -48,8 +71,19 @@ table {
 }
 
 .navbar-search {
+  left: 50%;
+  margin:auto;
+}
+
+.navbar-profile {
   position: absolute;
+  top:5%;
   right: 20px;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.navbar-profile:hover {
+  scale: 1.075;
 }
 
 .btn {
@@ -99,8 +133,35 @@ table {
   background-color: rgba(251, 200, 200, 0.313);
 }
 
+.repository-search {
+  margin-top: 0px;
+  border: 1px solid rgb(227, 227, 227);
+  background-color: rgb(250, 250, 250);
+  border-radius: 10px 0px 0px 10px;
+  padding:6px;
+  border-right: none;
+  max-width:300px;
+  min-width:100px;
+}
+
 .gotorepo {
-  margin-left:5px;
+  border-radius: 0px 10px 10px 0px;
+  background-color: rgb(250, 250, 250);
+  margin-top: 0px;
+  border: 1px solid rgb(227, 227, 227);
+  border-left: none;
+  
+  /* border-radius:10px; */
+  padding:6px;
+}
+
+.gotorepo:hover {
+  border: 1px solid rgba(0, 0, 255, 0.518);
+}
+
+.repository-search:hover {
+  border: 1px solid rgba(0, 0, 255, 0.518);
+  background-color: white;
 }
 
 .enter-id {
@@ -108,7 +169,6 @@ table {
   align-items:center;
   justify-content: center;
 }
-
 
 .modal {
   position: fixed;
@@ -145,47 +205,84 @@ table {
 .validated-text {
   color: green;
   font-weight: bold;
-}
+} 
 
 .no-repos {
+
+  color: rgb(120, 120, 120);
   margin: auto;
+  margin-top: 150px;
   text-align: center;
 }
 
-.results-list {
-  list-style: none;
+.search-summary {
+  color: rgb(100, 100, 100);
+}
 
+.search-results {
+  vertical-align: middle;
+  text-align: justify;
+  margin-top:20px;
+  overflow-y: scroll;
+  height: 550px;
+  bottom:10px;
+  left:0;
+}
+
+.result-name {
+  color: rgb(56, 56, 56);
+  padding: 50px;
+}
+
+.search-result {
+  border:1px solid rgb(230, 230, 230);
+  height: 40px;
+  padding:10px;
+  top:0;
+}
+
+.search-result:hover {
+  background-color: rgb(245, 245, 245);
 }
 
 .pipeline-logo {
-  height:50px;
+  height:30px;
 }
 
-#card-headers-on {
-
-  max-width:300px;
-  min-width:150px;
+.settoken {
+  margin: 7% 20% 0% 20%;
+  text-align: center;
+  padding: 40px;
+  border: 1px solid rgb(212, 212, 212);
+  border-radius: 20px;
+  
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.11), 0 0 6px rgba(0,0,0,.05);
 }
 
-#card-headers-off {
-  min-width:120px;
-  max-width:150px;
+.token-instructions {
+  text-align:left;
+  border: 1px solid rgb(220, 220, 220);
+  background-color: rgb(245, 245, 245);
+  border-radius: 20px;
+  padding:20px;
+  padding-left: 30px;
+  margin-top:20px;
 }
 
 .card{
-  z-index: 1;
-  position:relative;
   border-radius: 4px;
   background: #fff;
-  max-width:300px;
+  max-width: 300px;
   text-align: center;
   object-fit:contain;
   cursor: pointer;
+  position:relative;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .card:hover{
-   transform: scale(1.05);
-   box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+   transform: scale(1.075);
+   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.11), 0 0 6px rgba(0,0,0,.05);
    transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
    color: black;
 }
@@ -194,12 +291,14 @@ table {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 2fr));
   gap: 20px;
+  margin-bottom: 20px;
 }
 
 .cards-no-headers {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 20px;
+  margin-bottom: 20px;
 }
 
 #green {
@@ -208,12 +307,6 @@ table {
 
 #red{
   background-color: rgba(255, 3, 3, 0.12);
-}
-
-.hovertext {
-  position: relative;
-
-  z-index: 9;
 }
 
 .hovertext:before {
@@ -227,14 +320,138 @@ table {
   border-radius: 5px;
   padding: 5px 0;
   transition: opacity 0.2s ease-in-out;
+  left: 0;
+
+  bottom: 105%;
+
+  z-index: 100000;
 
   position: absolute;
-  z-index: 2;
-  left: 0;
-  top: 110%;
 }
 
 .hovertext:hover:before {
   opacity: 1;
   visibility: visible;
+  
+  z-index: 100000;
+
 }
+
+
+
+.token-input {
+  width: 300px;
+}
+
+
+.input-dark {
+  background-color: rgb(53, 53, 53);
+  border: 1px solid rgb(149, 149, 149);
+  border-radius: 10px;
+  padding: 6px;
+  color: white;
+}
+
+.input-dark:hover {
+  background-color: black;
+  border: 1px solid white;
+}
+
+.loader {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 3px solid rgb(209, 209, 209);
+  border-right: 3px solid transparent;
+
+
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.view-gitlab-btn {
+  margin-top: 5px;
+}
+
+
+.metric-button {
+  padding:5px;
+  background-color: white;
+  color: gray;
+  border: none;
+  margin-bottom: 10px;
+  margin-right: 15px;
+}
+
+.metric-button:hover {
+  scale: 1.02;
+  color: black;
+}
+
+.active {
+  border-bottom: 2px solid rgb(203, 203, 203);
+  scale: 1.1; 
+  color: black;
+}
+
+.set-grid-name {
+
+  width:300px;
+}
+
+.profile-picture {
+  height:40px;
+  border-radius: 20px;
+  border: 1px solid white;
+}
+
+.loader-small {
+  width: 18px;
+  height: 18px;
+
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 3px solid rgb(209, 209, 209);
+  border-right: 3px solid transparent;
+
+
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
+
+
+
+
+.animate {
+  animation-duration: 0.5s;
+  animation-name: animate-fall-in;
+}
+
+
+
+@keyframes animate-fall-in {
+  0% {
+    opacity: 0.0;
+    transform: scale(1.025, 1.025);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+}
+
+
+
+
+
