@@ -2,20 +2,21 @@
 import { useEffect, useState } from "react"
 import RepositoryPanel from "./RepositoryPanel";
 
-let RepositoryGrid = ({request, repos, period, showHeaders}) => {
+let RepositoryGrid = ({metric, repos, period, showHeaders}) => {
 
-    let [req, setReq] = useState([])
+    let [met, setMet] = useState([])
+    let [grid, setGrid] = useState([])
 
     useEffect(() => {
-        setReq(request)
-        console.log("req: " + req)
-    }, [request]);
+        setMet(metric)
+        console.log("req: " + met)
+    }, [metric]);
 
     return (
         <div className={showHeaders? "cards-headers" : "cards-no-headers"}>
             {repos.map((repo, index) => (
                 <div key={`repository${index}`}>
-                    <RepositoryPanel id={repo} request={request} period={period} showHeaders={showHeaders}/>
+                    <RepositoryPanel id={repo} metric={met} period={period} showHeaders={showHeaders}/>
                 </div>
             ))}
                         

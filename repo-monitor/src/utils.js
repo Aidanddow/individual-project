@@ -31,7 +31,7 @@ export const fetchUrl = async (requestUrl) => {
     let response = await fetch(requestUrl, {
         headers: {
             "PRIVATE-TOKEN": token
-            // "PRIVATE-TOKEN": "glpat-N7BrBvPV3CqT2Unn1-Zh"
+
         }
     })
     return response

@@ -7,33 +7,46 @@ import RepositoryList from "../components/RepositoryList";
 
 let Metric = class {
 
-    constructor(name, endpoint) {
+    constructor(name, endpoint, bound) {
         this.name = name
         this.endpoint = endpoint
+        this.bound = 1
+    }
+
+    lowerBound = (period) => {
+        return this.bound
     }
 }
 
-let CountableMetric = class extends Metric {
-    show = () => {
-        return "Hello World"
+let TimedMetric = class extends Metric {
+
+    lowerBound = (period) => {
+        let numWeeks = Math.floor((new Date() - period) / (1000*60*60*24*7))
+        console.log("PERIOD: ", numWeeks)
+        numWeeks = numWeeks % 26
+        return this.bound * numWeeks
     }
+
+
+    
 }
 
 let GridView = () => {
    
     const navigate = useNavigate()
     let [repos, setRepos] = useState([])
-    let [request, setRequest] = useState("")
     let [showHeaders, setShowHeaders] = useState(false)
 
     const [requests] = useState([
-        new CountableMetric("Commits", "repository/commits"),
-        new CountableMetric("Open Issues", "issues"),
-        new CountableMetric("Merge Requests", "merge_requests"),
-        new Metric("Merge Comments", "merge_comments"),
-        new Metric("Pipeline Passes", "pipelines"),
-        new Metric("Last Commit (Days)", "last-commit"),
+        new TimedMetric("Commits", "repository/commits", 1),
+        new TimedMetric("Merge Requests", "merge_requests", 1),
+        new Metric("Open Issues", "issues", 1),
+        new TimedMetric("Merge Comments", "merge_comments", 10),
+        new Metric("Pipeline Passes", "pipelines", 1),
+        new Metric("Last Commit (Days)", "last-commit", 7),
     ])
+
+    let [metric, setMetric] = useState(new TimedMetric("Commits", "repository/commits"),)
 
     const now = new Date();
     let [periods, setPeriods] = useState(new Map([
@@ -46,7 +59,6 @@ let GridView = () => {
                                                 
     // let [periods, setPeriods] = useState(new Map())
     let [period, setPeriod] = useState(new Date())
-    let [newID, setNewID] = useState([])
     
     useEffect(() => {
 
@@ -59,12 +71,9 @@ let GridView = () => {
                 initialRepos = []
             }
             setRepos(initialRepos)
-            setRequest("repository/commits")
             setPeriod(periods.get("1 Week"))
         }
-
         r()
-        
     }, [])
 
     useEffect(() => {
@@ -76,17 +85,6 @@ let GridView = () => {
         if (!pat) {
             navigate("/settoken")
         }
-    }
-
-
-    let handleIdInputChange = (event) => {
-        setNewID(event.target.value)
-    }
-
-    let handleSubmit = (event) => {
-        event.preventDefault();
-        setRepos([...repos, newID])
-        setNewID([null])
     }
 
     let clearGrid = () => {
@@ -129,9 +127,9 @@ let GridView = () => {
                         <div className="col-10">
 
                             {requests.map(req => (
-                                <button onClick={() => {setRequest(req.endpoint) }} 
+                                <button onClick={() => {setMetric(req) }} 
                                     className={`metric-button
-                                    ${request===req.endpoint && "active"}`}>
+                                    ${metric===req && "active"}`}>
                                         {req.name}
                                 </button>
                             ))}
@@ -155,7 +153,7 @@ let GridView = () => {
                    
                     {repos.length != 0 ? 
                         <div className="animate">
-                        <RepositoryGrid request={request} repos={repos} period={period} showHeaders={showHeaders}/> 
+                        <RepositoryGrid metric={metric} repos={repos} period={period} showHeaders={showHeaders}/> 
                         </div>
                     : 
                     <div className="no-repos">

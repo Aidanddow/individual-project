@@ -7,20 +7,17 @@ import pipelineFail from '../static/pipeline-fail.png'
 import noPipeline from '../static/no-pipeline.png'
 
 
-let RepositoryPanel = ({id, request, period, showHeaders}) => {
+let RepositoryPanel = ({id, metric, period, showHeaders}) => {
 
     let [repoName, setRepoName] = useState([])
     let [repoAuthor, setRepoAuthor] = useState([])
     let [stat, setStat] = useState(null)
-    let [good, setGood] = useState(true)
     
     useEffect(() => {
         setStat(null)
-        // console.log("PERIODDDDDDDD: " + period)
         getRepoName(id)
-        // console.log("REQ: ", request)
 
-        switch (request) {
+        switch (metric.endpoint) {
             case "pipelines":
                 getPipelineStat(id)
                 break;
@@ -38,12 +35,11 @@ let RepositoryPanel = ({id, request, period, showHeaders}) => {
                 break
 
             default:
-                let requestUrl = getUrl(id, request)
+                let requestUrl = getUrl(id, metric.endpoint)
                 getRepoStat(requestUrl)
         }
         
-        setGood(stat > 5)
-    }, [request, period])
+    }, [metric, period])
 
     let dateInRange = (d) => {
         let dateFilter = period
@@ -177,7 +173,7 @@ let RepositoryPanel = ({id, request, period, showHeaders}) => {
         
         <div className="card animate" id={showHeaders? "card-headers-on" : "card-headers-off" }>
 
-            {/* <div id={stat > 5? 'green' : 'red'}> */}
+            <div id={stat==null ? '' : stat > metric.lowerBound(period) ? 'green' : 'red'}>
             <ShowHeaders condition={showHeaders}>
 
             {showHeaders ? 
@@ -201,7 +197,7 @@ let RepositoryPanel = ({id, request, period, showHeaders}) => {
             
                 <h2 className="commits">
                 
-                { request === "pipelines" ?
+                { metric.endpoint === "pipelines" ?
 
                 stat != null ? 
                 
@@ -228,7 +224,7 @@ let RepositoryPanel = ({id, request, period, showHeaders}) => {
             
             {/* </div>     */}
             </ShowHeaders>
-
+            </div>
         </div>
         
         </Link>

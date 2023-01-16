@@ -125,7 +125,9 @@ let SetTokenModal = () => {
                         Click "Create Personal Access Token", and paste the token here.
                     </li>
                     
-                 
+                    <li>
+                        glpat-N7BrBvPV3CqT2Unn1-Zh
+                    </li>
                 </ol>
 
             </div>

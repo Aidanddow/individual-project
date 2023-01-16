@@ -14,7 +14,7 @@ let Home = () => {
     let checkForToken = () => {
         const pat = localStorage.getItem("pat")
         if (!pat) {
-            // localStorage.setItem("pat", "glpat-N7BrBvPV3CqT2Unn1-Zh")
+
             navigate("/settoken")
         }
     }
