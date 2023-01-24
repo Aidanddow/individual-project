@@ -12,8 +12,6 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
     let [repoName, setRepoName] = useState([])
     let [repoAuthor, setRepoAuthor] = useState([])
     let [stat, setStat] = useState(null)
-    let [good, setGood] = useState(true)
-    let [repoID, setID] = useState(null)
     
     useEffect(() => {
         setStat(null)
@@ -43,11 +41,9 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
                 getRepoStat(requestUrl)
         }
         
-        setGood(stat > 5)
     }, [request, period, id])
 
     useEffect(() => {
-        setID(id)
         setRepoName("")
         setRepoAuthor("")
         setStat(null)
@@ -90,7 +86,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
             let pagesInRange = await getPagesInRange(requestUrl)
             let numComments, lastPageEntries
             
-            if (pagesInRange != 0) {
+            if (pagesInRange !== 0) {
                 lastPageEntries = await getPageEntries(requestUrl, pagesInRange)
                 numComments = ((pagesInRange-1) * 20) + lastPageEntries
                 return numComments
@@ -109,7 +105,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
     let getPipelineStat = async (id) => {
         let data = await getJsonData(id, "pipelines")
         // console.log("DATA: ", data)
-        if (data.length == 0) {
+        if (data.length ===0) {
             setStat("no-pipeline")
         } else {
             setStat("pipeline-pass")
@@ -140,7 +136,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
         let response = await fetchUrl(`${requestUrl}?page=${page}&per_page=20`)
         let data = await response.json()
         let numEntries = await getPageEntriesBeforeDate(data)
-        if (numEntries == -1) {
+        if (numEntries ===-1) {
             return 0
         } 
         return numEntries
@@ -158,7 +154,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
         let pagesInRange = await getPagesInRange(requestUrl)
         let statistic, lastPageEntries
         
-        if (pagesInRange == 0) {
+        if (pagesInRange ===0) {
             statistic = 0
             setStat(statistic)
         } else {
@@ -216,17 +212,17 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
             
                 <h2 className="commits">
                 
-                { request === "pipelines" ?
+                { request ==="pipelines" ?
 
-                stat != null ? 
+                stat !== null ? 
                 
-                <img src={ stat == "pipeline-pass" ? pipelinePass : stat == "pipeline-fail" ? pipelineFail : noPipeline} className="pipeline-logo animate"/>
+                <img src={ stat ==="pipeline-pass" ? pipelinePass : stat ==="pipeline-fail" ? pipelineFail : noPipeline} className="pipeline-logo animate" alt="pipeline"/>
                 
                 :<span className="loader"></span> 
                 
                 :
                 
-                    stat != null && !Number.isNaN(stat) ? 
+                    stat !== null && !Number.isNaN(stat) ? 
                     <div className="animate">
 
                         {stat}    

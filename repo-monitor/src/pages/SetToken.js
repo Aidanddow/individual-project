@@ -5,7 +5,6 @@ import rightArrow from '../static/arrow.png'
 let SetTokenModal = () => {
 
     let [token, setToken] = useState("")
-    let [submitted, setSubmitted] = useState(false)
 
     let [validating, setValidating] = useState(false)
     
@@ -87,9 +86,9 @@ let SetTokenModal = () => {
 
                 <button onClick={handleSubmit} className="gotorepo">
                     {validating ? 
-                        <span className="loader-small"></span> 
+                        <span className="loader-small"></span>
                         : 
-                        <img src={rightArrow} className="search-logo"></img>}
+                        <img src={rightArrow} className="search-logo" alt="Go"></img>}
                 </button>
                 </div> 
             
@@ -97,7 +96,7 @@ let SetTokenModal = () => {
                     {error}
                 </div>
 
-                {validated==true ? 
+                {validated === true ? 
                 <div className="validated-text">
                     Validated
                 </div> : <></>}

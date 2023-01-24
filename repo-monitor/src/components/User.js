@@ -21,7 +21,7 @@ let User = () => {
         <div className="profile pic">
 
             {!user.message ?
-            <img src={user.avatar_url} className="profile-picture"/>
+            <img src={user.avatar_url} className="profile-picture" alt=""/>
             :
             // <img src={noUserIcon} className="profile-picture" />
             <></>

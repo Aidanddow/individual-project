@@ -1,7 +1,7 @@
 
 import { useState } from "react"
 import { Link } from "react-router-dom";
-import { fetchSearch, fetchData, getJsonData } from "../utils.js"
+import { fetchSearch, getJsonData } from "../utils.js"
 import searchLogo from '../static/search.png'
 
 let RepositoryList = ( {gridRepos, setGridRepos} ) => {
@@ -10,11 +10,8 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
     let [searchSection, setSearchSection] = useState("projects")
 
     let [loadingResults, setLoadingResults] = useState(false)
-    
-    let [search, setSearch] = useState(1)
 
-    let [sections, setSections] = useState(new Map([
-        
+    let [sections] = useState(new Map([
         ["Projects", "projects"],
         ["Groups", "groups"],
     ]))
@@ -50,7 +47,7 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
     }
 
     let addToGrid = async (event, id) => {
-        if (searchSection == "projects") {
+        if (searchSection ==="projects") {
             setGridRepos([...gridRepos, id])
             return
         }
@@ -66,7 +63,7 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
     }
 
     const handleKeyDown = async event => {
-        if (event.key === 'Enter') {
+        if (event.key ==='Enter') {
           event.preventDefault();
           setLoadingResults(true);
           setResults([])
@@ -111,17 +108,17 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
                     {loadingResults ? 
                         <span className="loader-small"></span> 
                         : 
-                        <img src={searchLogo} className="search-logo"></img>}
+                        <img src={searchLogo} className="search-logo" alt="Search"></img>}
                 </button>
             </div>
 
             <div className="search-results">
                 <table className="table table-hover results-table">  
                     
-                    {results.length != 0 && searchSection == "projects"?  
+                    {results.length !== 0 && searchSection ==="projects"?  
 
                     <tr key="head" className="search-result search-summary">
-                        <tc>{results.length != 0 ? <>Showing: {results.length} results</> : <></>}</tc>
+                        <tc>{results.length !== 0 ? <>Showing: {results.length} results</> : <></>}</tc>
                         <tc><button onClick={addAll} className="btn btn-outline-primary">Add All</button></tc>
                     </tr>
                     : <></>

@@ -4,30 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import RepositoryGrid from "../components/RepositoryGrid";
 import RepositoryList from "../components/RepositoryList";
 
-
-let Metric = class {
-
-    constructor(name, endpoint, bound) {
-        this.name = name
-        this.endpoint = endpoint
-        this.bound = 1
-    }
-
-    lowerBound = (period) => {
-        return this.bound
-    }
-}
-
-let TimedMetric = class extends Metric {
-
-    lowerBound = (period) => {
-        let numWeeks = Math.floor((new Date() - period) / (1000*60*60*24*7))
-        console.log("PERIOD: ", numWeeks)
-        numWeeks = numWeeks % 26
-        return this.bound * numWeeks
-    }
-}
-
 let GridView = () => {
    
     const navigate = useNavigate()
@@ -35,20 +11,21 @@ let GridView = () => {
     let [showHeaders, setShowHeaders] = useState(false)
 
     const requestsArr = [
-        new TimedMetric("Commits", "repository/commits", 1),
-        new TimedMetric("Merge Requests", "merge_requests", 1),
-        new Metric("Open Issues", "issues", 1),
-        new TimedMetric("Merge Comments", "merge_comments", 10),
-        new Metric("Pipeline Passes", "pipelines", 1),
-        new Metric("Last Commit (Days)", "last-commit", 7),
+        { name: "Commits", endpoint: "repository/commits" },
+        { name: "Merge Requests", endpoint: "merge_requests" },
+        { name: "Open Issues", endpoint: "issues" },
+        { name: "Merge Comments", endpoint: "merge_comments", },
+        { name: "Pipeline Passes", endpoint: "pipelines" },
+        { name: "Last Commit (Days)", endpoint: "last-commit" },
     ]
 
     const [requests] = useState(requestsArr)
 
     let [metric, setMetric] = useState(requestsArr[0])
+    let [stats, setStats] = useState([])
 
     const now = new Date();
-    let [periods, setPeriods] = useState(new Map([
+    let [periods] = useState(new Map([
         ["1 Week", new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)],
         ["1 Month", new Date(now.getFullYear(), now.getMonth()-1, now.getDate())],
         ["3 Months", new Date(now.getFullYear(), now.getMonth()-3, now.getDate())],
@@ -66,7 +43,6 @@ let GridView = () => {
             const initialRepos = await JSON.parse(localStorage.getItem("ids"))
             if (!initialRepos) {
                 localStorage.setItem("ids", "[]")
-                initialRepos = []
             }
             setRepos(initialRepos)
             setPeriod(periods.get("1 Week"))
@@ -90,33 +66,45 @@ let GridView = () => {
         setRepos([])
     }
 
-    let handleChange = (event) => {
-        setPeriod(new Date(event.target.value))
-    }
+    let sortRepos = async (alg) => {
+        console.log("REPOS BEFORE: ", repos)
+        let sortedRepos = [...repos]
+            .map((id, index) => [id, stats[index] ? stats[index]: 0] )
+            .sort( alg )
+        
+        console.log(sortedRepos)
 
-    let toggleHeader = () => {
-        setShowHeaders(!showHeaders)
+        // console.log("REPOS SORTED: ", sortedRepos)
+        setStats( (stats) => sortedRepos.map(a => a[1]))
+        setRepos( (repos) => sortedRepos.map(a => a[0]))
+        console.log("REPOS AFTER: ", sortedRepos.map(a => a[0]))
     }
-    
 
     return (
         <div className="repository-grid container-fluid">
             
-
             <div className="row">
 
                 <div className="col-9 griddd">
-                    <div className="container-fluid">
+                    <div className="">
                         
                         <div className="row">
-                            <div className="col-8">
+                            <div className="col-4">
                                 <h1 className="title set-grid-name">Untitled Grid</h1>
                             </div>
 
-                            <div className="col-4">
+                            <div className="col-8">
                                 <ul className="options-list">
                                     <li className="option-button">
-                                        <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
+                                        <button onClick={() => setShowHeaders(!showHeaders)} className="btn btn-outline-primary">Toggle Headers</button>
+                                    </li>
+
+                                    <li className="option-button">
+                                        <button onClick={() => sortRepos((a, b) => a[1] > b[1])} className="btn btn-outline-primary">Sort Asc</button>
+                                    </li>
+
+                                    <li className="option-button">
+                                        <button onClick={() => sortRepos((a, b) => a[1] < b[1])} className="btn btn-outline-primary">Sort Desc</button>
                                     </li>
                                 
                                     <li className="option-button">
@@ -139,7 +127,7 @@ let GridView = () => {
                             </div>
 
                             <div className="col-2">
-                                <select id="dropdown" onChange={handleChange} class="form-select" aria-label="Default select example">
+                                <select id="dropdown" onChange={(event) => setPeriod(new Date(event.target.value))} class="form-select" aria-label="Default select example">
                                     {[...periods.keys()].map((name) => (
                                         <option value={periods.get(name)}>{name}</option>
                                     ))}
@@ -149,10 +137,17 @@ let GridView = () => {
 
                         </div>
                                 
-                    
-                        {repos.length != 0 ? 
+                        {repos.length !== 0 ? 
                             <div className="animate">
-                            <RepositoryGrid metric={metric} repoIds={repos} period={period} showHeaders={showHeaders}/> 
+                            <RepositoryGrid 
+                                metric={metric}
+                                repos={repos}
+                                period={period}
+                                showHeaders={showHeaders}
+                                stats={stats}
+                                setStats={setStats}
+                                setRepos={setRepos}
+                            /> 
                             </div>
                         : 
                         <div className="no-repos animate">

@@ -53,7 +53,7 @@ table {
 }
 
 .table-bordered {
-  border: 1px solid rgb(230, 230, 230);
+  border: 2px solid rgb(230, 230, 230);
 }
 
 .btn-add-to-grid:hover {
@@ -64,6 +64,7 @@ table {
 .options-list {
   display: flex;
   list-style: none;
+  float: right;
 }
 
 .options-button {
@@ -119,7 +120,8 @@ table {
 }
 
 .repository-grid {
- margin-top: 20px;
+ margin-top: 15px;
+
 }
 
 .homepage {

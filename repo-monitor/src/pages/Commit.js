@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom";
 import ShowDiff from '../components/ShowDiff'
-import { getJsonData, fetchData, getUrl } from "../utils.js"
+import { getJsonData, fetchData } from "../utils.js"
 
 let Commit = () => {
     const { id, sha } = useParams()
@@ -60,7 +60,7 @@ let Commit = () => {
         <div className="container-fluid">
             
             <h1>Commit Diff</h1>
-            {commit.length == 0 ? 
+            {commit.length ===0 ? 
             <h2>Commit info not found.</h2> :
             <>
             <Link to={`/repository/${id}`} className="btn btn-outline-primary">Back to Repository</Link>
