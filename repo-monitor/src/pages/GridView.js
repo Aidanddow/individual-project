@@ -26,9 +26,6 @@ let TimedMetric = class extends Metric {
         numWeeks = numWeeks % 26
         return this.bound * numWeeks
     }
-
-
-    
 }
 
 let GridView = () => {
@@ -37,16 +34,18 @@ let GridView = () => {
     let [repos, setRepos] = useState([])
     let [showHeaders, setShowHeaders] = useState(false)
 
-    const [requests] = useState([
+    const requestsArr = [
         new TimedMetric("Commits", "repository/commits", 1),
         new TimedMetric("Merge Requests", "merge_requests", 1),
         new Metric("Open Issues", "issues", 1),
         new TimedMetric("Merge Comments", "merge_comments", 10),
         new Metric("Pipeline Passes", "pipelines", 1),
         new Metric("Last Commit (Days)", "last-commit", 7),
-    ])
+    ]
 
-    let [metric, setMetric] = useState(new TimedMetric("Commits", "repository/commits"),)
+    const [requests] = useState(requestsArr)
+
+    let [metric, setMetric] = useState(requestsArr[0])
 
     const now = new Date();
     let [periods, setPeriods] = useState(new Map([
@@ -57,7 +56,6 @@ let GridView = () => {
         ["All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate())],
     ]))
                                                 
-    // let [periods, setPeriods] = useState(new Map())
     let [period, setPeriod] = useState(new Date())
     
     useEffect(() => {
@@ -71,7 +69,7 @@ let GridView = () => {
                 initialRepos = []
             }
             setRepos(initialRepos)
-            setPeriod(periods.get("1 Week"))
+            setPeriod(periods.get("All-Time"))
         }
         r()
     }, [])
@@ -103,77 +101,83 @@ let GridView = () => {
     return (
         <div className="repository-grid container-fluid">
             
-            <div className="repoGrid">
+
             <div className="row">
 
-            <div className="col-9">
-                <div className="container-fluid">
-                    
-                    <div className="row">
-                        <div className="col-8">
-                            <h1 className="title set-grid-name">Untitled Grid</h1>
-                        </div>
+                <div className="col-9 griddd">
+                    <div className="container-fluid">
                         
-                        <div className="col-2">
-                        <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
-                        </div>
-                        
-                        <div className="col-2">
-                            <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
-                        </div>
-                    </div>
+                        <div className="row">
+                            <div className="col-6">
+                                <h1 className="title set-grid-name">Untitled Grid</h1>
+                            </div>
 
-                    <div className="row">
-                        <div className="col-10">
-
-                            {requests.map(req => (
-                                <button onClick={() => {setMetric(req) }} 
-                                    className={`metric-button
-                                    ${metric===req && "active"}`}>
-                                        {req.name}
-                                </button>
-                            ))}
+                            <div className="col-6">
+                                <ul className="options-list">
+                                    <li className="option-button">
+                                        <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
+                                    </li>
+                                
+                                    <li className="option-button">
+                                        <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
+                                    </li>
+                                
+                                    <li className="option-button">
+                                        <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
 
-                        <div className="col-2">
-                            <select id="dropdown" onChange={handleChange} class="form-select" aria-label="Default select example">
-                                {[...periods.keys()].map((name) => (
-                                    <option value={periods.get(name)}>{name}</option>
+                        <div className="row metric-buttons">
+                            <div className="col-10">
+
+                                {requests.map(req => (
+                                    <button onClick={() => {setMetric(req) }} 
+                                        className={`metric-button
+                                        ${metric===req && "active"}`}>
+                                            {req.name}
+                                    </button>
                                 ))}
+                            </div>
 
+                            <div className="col-2">
+                                <select id="dropdown" onChange={handleChange} class="form-select" aria-label="Default select example">
+                                    {[...periods.keys()].map((name) => (
+                                        <option value={periods.get(name)}>{name}</option>
+                                    ))}
 
-                            
-                            </select>
+                                </select>
+                            </div>
+
+                    
+
                         </div>
-
-                  
-
-                    </div>
-                            
-                   
-                    {repos.length != 0 ? 
-                        <div className="animate">
-                        <RepositoryGrid metric={metric} repos={repos} period={period} showHeaders={showHeaders}/> 
+                                
+                    
+                        {repos.length != 0 ? 
+                            <div className="animate">
+                            <RepositoryGrid metric={metric} repoIds={repos} period={period} showHeaders={showHeaders}/> 
+                            </div>
+                        : 
+                        <div className="no-repos animate">
+                            <h3>
+                                You currently have no repositories in the grid!
+                            </h3>
+                            <h5>
+                                Add repositories by searching!
+                            </h5>
                         </div>
-                    : 
-                    <div className="no-repos">
-                        <h3>
-                            You currently have no repositories in the grid!
-                        </h3>
-                        <h5>
-                            Add repositories by searching!
-                        </h5>
-                    </div>
-                    }   
+                        }   
 
-                    </div>
-            </div>
-            <div className="col-3">
-                <RepositoryList gridRepos={repos} setGridRepos={setRepos}/>
-            </div> 
+                        </div>
+                </div>
+            
+                <div className="col-3">
+                    <RepositoryList gridRepos={repos} setGridRepos={setRepos}/>
+                </div> 
             </div>
         
-            </div>
     
         </div>
         

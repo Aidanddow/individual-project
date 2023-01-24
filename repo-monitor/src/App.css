@@ -53,14 +53,31 @@ table {
   color: rgb(230, 230, 230);
 }
 
-.repository-search-list {
+.options-list {
+  display: flex;
+  list-style: none;
+}
+
+.options-button {
+  list-style: none;
+}
+
+.griddd {
+  background-color: white;
   border: 1px solid rgb(230, 230, 230);
   border-radius: 5px;
   padding:10px;
-  text-align: center;
-  height: 88vh;
 }
 
+.repository-search-list {
+  border: 1px solid rgb(230, 230, 230);
+  background-color: white;
+  border-radius: 5px;
+  padding:10px;
+  text-align: center;
+  /* height: 88vh; */
+  height: 50vh;
+}
 
 .links {
   list-style: none;
@@ -69,6 +86,8 @@ table {
 .application-name {
   margin-left:20px;
 }
+
+
 
 .navbar-search {
   left: 50%;
@@ -207,12 +226,28 @@ table {
   font-weight: bold;
 } 
 
+.header-row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.121);
+  background-color: rgb(240, 240, 240);
+}
+
 .no-repos {
 
   color: rgb(120, 120, 120);
   margin: auto;
   margin-top: 150px;
   text-align: center;
+}
+
+.repo-grid {
+  padding: 15px;
+  border: 2px solid rgb(240, 240, 240);
+  border-radius: 5px;
+  background-color: white;
+}
+
+.metric-buttons {
+
 }
 
 .search-summary {
@@ -224,7 +259,8 @@ table {
   text-align: justify;
   margin-top:20px;
   overflow-y: scroll;
-  height: 550px;
+  /* height: 550px; */
+  height: 30vh;
   bottom:10px;
   left:0;
 }
