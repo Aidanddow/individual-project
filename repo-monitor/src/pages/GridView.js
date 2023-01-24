@@ -69,7 +69,7 @@ let GridView = () => {
                 initialRepos = []
             }
             setRepos(initialRepos)
-            setPeriod(periods.get("All-Time"))
+            setPeriod(periods.get("1 Week"))
         }
         r()
     }, [])
@@ -97,6 +97,7 @@ let GridView = () => {
     let toggleHeader = () => {
         setShowHeaders(!showHeaders)
     }
+    
 
     return (
         <div className="repository-grid container-fluid">
@@ -108,16 +109,12 @@ let GridView = () => {
                     <div className="container-fluid">
                         
                         <div className="row">
-                            <div className="col-6">
+                            <div className="col-8">
                                 <h1 className="title set-grid-name">Untitled Grid</h1>
                             </div>
 
-                            <div className="col-6">
+                            <div className="col-4">
                                 <ul className="options-list">
-                                    <li className="option-button">
-                                        <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
-                                    </li>
-                                
                                     <li className="option-button">
                                         <button onClick={() => toggleHeader()} className="btn btn-outline-primary">Toggle Headers</button>
                                     </li>
@@ -149,8 +146,6 @@ let GridView = () => {
 
                                 </select>
                             </div>
-
-                    
 
                         </div>
                                 

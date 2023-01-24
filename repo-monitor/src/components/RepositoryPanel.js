@@ -11,7 +11,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
 
     let [repoName, setRepoName] = useState([])
     let [repoAuthor, setRepoAuthor] = useState([])
-    let [stat, setStat] = useState(2412)
+    let [stat, setStat] = useState(null)
     let [good, setGood] = useState(true)
     let [repoID, setID] = useState(null)
     
@@ -55,11 +55,10 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
 
 
     useEffect(() => {
-        // if (!stat) return 
-
+        if (!stat) return 
         stats[index] = stat
         setStats(stats)
-    }, [stat])
+    }, [stat, setStat])
 
     let dateInRange = (d) => {
         let dateFilter = period
@@ -193,7 +192,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
         
         <div className="card animate" id={showHeaders? "card-headers-on" : "card-headers-off" }>
 
-            <div id={stat==null ? '' : stat > 2 ? 'green' : 'red'}>
+            <div id={stat==null ? '' : stat > 2 ? '' : ''}>
             <ShowHeaders condition={showHeaders}>
 
             {showHeaders ? 
@@ -201,7 +200,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
                 <div className="card-header">
                     {!Number.isNaN(stat) ? 
                     <div className="name-and-author">
-                        <h6 className="repo-title">{ repoName } {id}</h6>
+                        <h6 className="repo-title">{ repoName }</h6>
                         
                         <p className="repo-title">
                         {repoAuthor.length < 26 ? 

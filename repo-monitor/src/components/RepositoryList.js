@@ -120,7 +120,7 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
                     
                     {results.length != 0 && searchSection == "projects"?  
 
-                    <tr className="search-result search-summary">
+                    <tr key="head" className="search-result search-summary">
                         <tc>{results.length != 0 ? <>Showing: {results.length} results</> : <></>}</tc>
                         <tc><button onClick={addAll} className="btn btn-outline-primary">Add All</button></tc>
                     </tr>
