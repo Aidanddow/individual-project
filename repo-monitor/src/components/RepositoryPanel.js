@@ -7,122 +7,86 @@ import pipelineFail from '../static/pipeline-fail.png'
 import noPipeline from '../static/no-pipeline.png'
 
 
-let Repository = class {
+let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats}) => {
 
-    constructor(id, name="", author="", stat=null, loading=true) {
-        this.id = id
-        this.name = name
-        this.author = author
-        this.stat = stat
-        this.loading = loading
-    }
-
-
-    toString() {
-        return `Repo: ${this.author} ${this.stat}`
-    }
-
-    fetchName = async () => {
-        let data = await fetchData(this.id, "")
-        let dataJson = await data.json()
-
-        this.name = dataJson.name
-        this.author = dataJson.namespace.name
-        console.log("Should have changed now!: ", this.toString())
-    }
-}
-
-
-let RepositoryPanel = ({id, repos, setRepos, metric, period, showHeaders}) => {
-
-    let [repo, setRepo] = useState(new Repository(id))
-
-    useEffect(() => {
-        repo.fetchName()
-        
-        let requestUrl = getUrl(repo.id, "repository/commits")
-        getRepoStat(repo, requestUrl)
-    }, [])
-
-    useEffect(() => {
-        console.log("REPO HAS BEEN CHANGED, now: ", repo.toString())
-
-        let newRepo = new Repository(
-            repo.id,
-            repo.name,
-            repo.author,
-            stat,
-        )
-        repos[id] = newRepo
-        setRepos(repos)
-        setRepo(newRepo)
-
-    }, [repo.stat, setRepo])
-
-    useEffect(() => {
-        setRepo(repo)
-    }, [repo.name, repo.author])
+    let [repoName, setRepoName] = useState([])
+    let [repoAuthor, setRepoAuthor] = useState([])
+    let [stat, setStat] = useState(2412)
+    let [good, setGood] = useState(true)
+    let [repoID, setID] = useState(null)
     
     useEffect(() => {
-        repo.stat = null
-        repo.loading = true
-        setRepo(repo)
-        // getRepoName(repo)
-        
-        switch (metric.endpoint) {
+        setStat(null)
+        // console.log("PERIODDDDDDDD: " + period)
+        getRepoName(id)
+        // console.log("REQ: ", request)
+
+        switch (request) {
             case "pipelines":
-                getPipelineStat(repo)
+                getPipelineStat(id)
                 break;
             
             case "issues":
-                getIssues(repo)
+                getIssues(id)
                 break
             
             case "last-commit":
-                getLastCommit(repo)
+                getLastCommit(id)
                 break
 
             case "merge_comments":
-                getMergeComments(repo)
+                getMergeComments(id)
                 break
 
             default:
-                let requestUrl = getUrl(repo.id, metric.endpoint)
-                getRepoStat(repo, requestUrl)
+                let requestUrl = getUrl(id, request)
+                getRepoStat(requestUrl)
         }
         
-    }, [metric, period])
+        setGood(stat > 5)
+    }, [request, period, id])
+
+    useEffect(() => {
+        setID(id)
+        setRepoName("")
+        setRepoAuthor("")
+        setStat(null)
+    }, [id])
+
+
+    useEffect(() => {
+        // if (!stat) return 
+
+        stats[index] = stat
+        setStats(stats)
+    }, [stat])
 
     let dateInRange = (d) => {
         let dateFilter = period
         return (d >= dateFilter)
     }
 
-    let getLastCommit = async (repo) => {
-        let data = await getJsonData(repo.id, "repository/commits")
+    let getLastCommit = async (id) => {
+        let data = await getJsonData(id, "repository/commits")
         let statistic = getDaysSinceCommit(data[0].created_at)
-        repo.stat = statistic
-        repo.loading = false
-        setRepo(repo)
+        setStat(statistic)
     }
 
-    let getIssues = async (repo) => {
-        let data = await getJsonData(repo.id, "issues_statistics")
+    let getIssues = async (id) => {
+        let data = await getJsonData(id, "issues_statistics")
         // console.log("ISSUESSS ", data.statistics.counts)
         let stats = data.statistics.counts
-        
-        repo.stat = stats.opened
-        repo.loading = false
-        setRepo(repo)
+        setStat(stats.opened)
     }
 
-    let getMergeComments = async (repo) => {
-        
-        let mergeRequests = await getJsonData(repo.id, "merge_requests")
+    let getMergeComments = async (id) => {
+        console.log("------------------------------- Getting Merge Notes")
+        let mergeRequests = await getJsonData(id, "merge_requests")
 
-        let mergeUrl = getUrl(repo.id, "merge_requests")
+        let mergeUrl = getUrl(id, "merge_requests")
     
         let notes = await mergeRequests.map( async (merge) => {
+            console.log("TRYing this:::::: ---------------------------------------------------")
             let requestUrl = `${mergeUrl}/${merge.iid}/notes`
             let pagesInRange = await getPagesInRange(requestUrl)
             let numComments, lastPageEntries
@@ -134,11 +98,11 @@ let RepositoryPanel = ({id, repos, setRepos, metric, period, showHeaders}) => {
             }
         })
 
-        repo.stat = await notes.reduce(async (a, b) => await a + await b, 0)
+        notes = await notes.reduce(async (a, b) => await a + await b, 0)
 
         console.log("Notes: ", notes)
-        repo.loading = false
-        setRepo(repo)
+
+        setStat(notes)
 
     }
     
@@ -147,12 +111,10 @@ let RepositoryPanel = ({id, repos, setRepos, metric, period, showHeaders}) => {
         let data = await getJsonData(id, "pipelines")
         // console.log("DATA: ", data)
         if (data.length == 0) {
-            repo.stat = "no-pipeline"
+            setStat("no-pipeline")
         } else {
-            repo.stat = "pipeline-pass"
+            setStat("pipeline-pass")
         }
-        repo.loading = false
-        setRepo(repo)
     }
     
     let getPagesInRange = async (requestUrl) => {
@@ -192,24 +154,35 @@ let RepositoryPanel = ({id, repos, setRepos, metric, period, showHeaders}) => {
         }).length
     }
 
-    let getRepoStat = async (repo, requestUrl) => {
+    let getRepoStat = async (requestUrl) => {
 
         let pagesInRange = await getPagesInRange(requestUrl)
-        let lastPageEntries
+        let statistic, lastPageEntries
         
         if (pagesInRange == 0) {
-            repo.stat = 0
+            statistic = 0
+            setStat(statistic)
         } else {
             lastPageEntries = await getPageEntries(requestUrl, pagesInRange)
-            repo.stat = ((pagesInRange-1) * 20) + lastPageEntries   
+            statistic = ((pagesInRange-1) * 20) + lastPageEntries
+            setStat(statistic)
         }
-        repo.loading = false
-        setRepo(repo)
+
+        setStat(statistic)
+    }
+
+    let getRepoName = async (id) => {
+        let data = await fetchData(id, "")
+        let dataJson = await data.json()
+        
+        // console.log("NAME: ", dataJson.name)
+        setRepoName(dataJson.name)
+        setRepoAuthor(dataJson.namespace.name)
     }
 
     const ShowHeaders = ({ condition, children }) => 
         !condition ? 
-            <span className="hovertext" id="hovertext" data-hover={`${repo.name} - ${repo.author}`}>
+            <span className="hovertext" id="hovertext" data-hover={`${repoName} - ${repoAuthor}`}>
                 {children}
             </span> 
 
@@ -220,19 +193,19 @@ let RepositoryPanel = ({id, repos, setRepos, metric, period, showHeaders}) => {
         
         <div className="card animate" id={showHeaders? "card-headers-on" : "card-headers-off" }>
 
-            <div id={repo.stat==null ? '' : repo.stat > metric.lowerBound(period) ? 'green' : 'red'}>
+            <div id={stat==null ? '' : stat > 2 ? 'green' : 'red'}>
             <ShowHeaders condition={showHeaders}>
 
             {showHeaders ? 
             
                 <div className="card-header">
-                    {!Number.isNaN(repo.stat) ? 
+                    {!Number.isNaN(stat) ? 
                     <div className="name-and-author">
-                        <h6 className="repo-title">{ repo.name }</h6>
+                        <h6 className="repo-title">{ repoName } {id}</h6>
                         
                         <p className="repo-title">
-                        {repo.author.length < 26 ? 
-                            <>{repo.author}</>  : <>{repo.author.substring(0, 20)}...</>
+                        {repoAuthor.length < 26 ? 
+                            <>{repoAuthor}</>  : <>{repoAuthor.substring(0, 20)}...</>
                         }
                         </p>
                     </div>: <></> }
@@ -244,21 +217,20 @@ let RepositoryPanel = ({id, repos, setRepos, metric, period, showHeaders}) => {
             
                 <h2 className="commits">
                 
-                { metric.endpoint === "pipelines" ?
+                { request === "pipelines" ?
 
-                !repo.loading ?
+                stat != null ? 
                 
-                <img src={ repo.stat == "pipeline-pass" ? pipelinePass : repo.stat == "pipeline-fail" ? pipelineFail : noPipeline} className="pipeline-logo animate"/>
+                <img src={ stat == "pipeline-pass" ? pipelinePass : stat == "pipeline-fail" ? pipelineFail : noPipeline} className="pipeline-logo animate"/>
                 
                 :<span className="loader"></span> 
                 
                 :
                 
-                 !repo.loading && !Number.isNaN(repo.stat) ? 
+                    stat != null && !Number.isNaN(stat) ? 
                     <div className="animate">
-                        {console.log("REPO STAT SHOULD BE: ", repo)}
 
-                        {repo.stat}    
+                        {stat}    
                     </div>
                   : 
                   <span className="loader"></span> 
