@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import RepositoryPanel from "./RepositoryPanel";
 
 
-let RepositoryGrid = ({metric, repos, period, showHeaders, stats, setStats, setRepos}) => {
+let RepositoryGrid = ({metric, repos, period, showHeaders, stats, setStats, setRepos, avgStat}) => {
 
     // let [repos, setRepos] = useState([])
     // let [stats, setStats] = useState([])
@@ -30,6 +30,7 @@ let RepositoryGrid = ({metric, repos, period, showHeaders, stats, setStats, setR
                             showHeaders={showHeaders} 
                             stats={stats} 
                             setStats={setStats}
+                            avgStat={avgStat}
                         />
                     
                     </div>

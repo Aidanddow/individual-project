@@ -9,6 +9,7 @@ let GridView = () => {
     const navigate = useNavigate()
     let [repos, setRepos] = useState([])
     let [showHeaders, setShowHeaders] = useState(false)
+    let [avgStat, setAvgStat] = useState(null)
 
     const requestsArr = [
         { name: "Commits", endpoint: "repository/commits" },
@@ -25,13 +26,20 @@ let GridView = () => {
     let [stats, setStats] = useState([])
 
     const now = new Date();
+
+    var prevMonday = new Date();
+    prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + 6) % 7);
+
     let [periods] = useState(new Map([
         ["1 Week", new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)],
         ["1 Month", new Date(now.getFullYear(), now.getMonth()-1, now.getDate())],
         ["3 Months", new Date(now.getFullYear(), now.getMonth()-3, now.getDate())],
         ["1 Year", new Date(now.getFullYear()-1, now.getMonth(), now.getDate())],
         ["All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate())],
+        ["Start of Week", prevMonday],
     ]))
+
+    console.log(prevMonday)
                                                 
     let [period, setPeriod] = useState(new Date())
     
@@ -53,6 +61,24 @@ let GridView = () => {
     useEffect(() => {
         localStorage.setItem("ids", JSON.stringify(repos))
     }, [repos])
+
+    useEffect(() => {
+
+        console.log("STATS HAS BEEN CHANGED, NOW: ", stats)
+        let tot = 0
+        stats.forEach(s => tot+=s)
+        let numFilled = stats.filter(s => s != null).length
+        
+        if (numFilled == 0) {
+            numFilled = 1
+        }
+        console.log("Number of stats processed: ", numFilled)
+        
+
+        console.log("TOTAL: ", tot)
+        console.log("AVG: ", tot/numFilled)
+        setAvgStat(tot / numFilled)
+    }, [stats, setStats, metric, period])
 
     let checkForToken = () => {
         const pat = localStorage.getItem("pat")
@@ -78,6 +104,14 @@ let GridView = () => {
         setStats( (stats) => sortedRepos.map(a => a[1]))
         setRepos( (repos) => sortedRepos.map(a => a[0]))
         console.log("REPOS AFTER: ", sortedRepos.map(a => a[0]))
+    }
+
+    let colourRepos = async () => {
+        console.log("Colouring repos")
+        let tot = 0
+        stats.forEach(s => tot += s)
+        setAvgStat(tot / stats.length)
+
     }
 
     return (
@@ -127,7 +161,7 @@ let GridView = () => {
                             </div>
 
                             <div className="col-2">
-                                <select id="dropdown" onChange={(event) => setPeriod(new Date(event.target.value))} class="form-select" aria-label="Default select example">
+                                <select id="dropdown" onChange={(event) => setPeriod(new Date(event.target.value))} className="form-select" aria-label="Default select example">
                                     {[...periods.keys()].map((name) => (
                                         <option value={periods.get(name)}>{name}</option>
                                     ))}
@@ -147,6 +181,7 @@ let GridView = () => {
                                 stats={stats}
                                 setStats={setStats}
                                 setRepos={setRepos}
+                                avgStat={avgStat}
                             /> 
                             </div>
                         : 

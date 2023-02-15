@@ -346,11 +346,16 @@ table {
 }
 
 #green {
-  background-color: rgba(3, 255, 3, 0.12);
+  background-color: rgba(3, 255, 3, 0.15);
 }
 
 #red{
-  background-color: rgba(255, 3, 3, 0.12);
+  background-color: rgba(255, 3, 3, 0.15);
+}
+
+#orange {
+  /* background-color: rgba(255, 166, 0, 0.15); */
+  background-color: rgba(255, 255, 0, 0.153);
 }
 
 .hovertext:before {
@@ -367,9 +372,7 @@ table {
   left: 0;
 
   bottom: 105%;
-
   z-index: 100000;
-
   position: absolute;
 }
 

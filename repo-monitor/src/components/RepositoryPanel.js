@@ -7,7 +7,7 @@ import pipelineFail from '../static/pipeline-fail.png'
 import noPipeline from '../static/no-pipeline.png'
 
 
-let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats}) => {
+let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats, avgStat}) => {
 
     let [repoName, setRepoName] = useState([])
     let [repoAuthor, setRepoAuthor] = useState([])
@@ -51,7 +51,6 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
 
 
     useEffect(() => {
-        if (!stat) return 
         stats[index] = stat
         setStats(stats)
     }, [stat, setStat])
@@ -183,12 +182,44 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
 
             : children;
 
+    let getColour = (stat, avg) => {
+        const delta = (stat/avg) - 1
+
+        if (delta >= 0) {
+            return 'green'
+        }
+        else if (delta <= -0.5) {
+            return 'red'
+        }
+        else {
+            return 'orange'
+        }
+    }
+
+
+
+    // function getColour(stat, avg) {
+    //     let perc = stat / avg
+    //     var r, g, b = 0;
+    //     if(perc < 50) {
+    //         r = 255;
+    //         g = Math.round(5.1 * perc);
+    //     }
+    //     else {
+    //         g = 255;
+    //         r = Math.round(510 - 5.10 * perc);
+    //     }
+    //     var h = r * 0x10000 + g * 0x100 + b * 0x1;
+    //     return '#' + ('000000' + h.toString(16)).slice(-6);
+    // }
+    
+
     return (
         <Link to={`/repository/${id}`} className='repo-title' >
         
         <div className="card animate" id={showHeaders? "card-headers-on" : "card-headers-off" }>
 
-            <div id={stat==null ? '' : stat > 2 ? '' : ''}>
+            <div id={stat==null ? '' : getColour(stat, avgStat)}>
             <ShowHeaders condition={showHeaders}>
 
             {showHeaders ? 

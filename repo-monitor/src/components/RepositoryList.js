@@ -10,6 +10,7 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
     let [searchSection, setSearchSection] = useState("projects")
 
     let [loadingResults, setLoadingResults] = useState(false)
+    let [adding, setAdding] = useState(false)
 
     let [sections] = useState(new Map([
         ["Projects", "projects"],
@@ -47,13 +48,15 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
     }
 
     let addToGrid = async (event, id) => {
+        setAdding(true)
         if (searchSection ==="projects") {
             setGridRepos([...gridRepos, id])
             return
         }
         
-        let groupProjects = await getJsonData(id, "projects?include_subgroups=true", "groups")
+        let groupProjects = await getJsonData(id, "projects?include_subgroups=true&per_page=100", "groups")
         setGridRepos([...gridRepos, ...groupProjects.map( project => project.id.toString() )])
+        setAdding(false)
     }
 
     let addAll = () => {
@@ -135,7 +138,9 @@ let RepositoryList = ( {gridRepos, setGridRepos} ) => {
                             </Link> 
                             
                             <tc>
-                                <button onClick={event => addToGrid(event, repo.id)} className="btn-add-to-grid">+</button>
+                                <button onClick={event => addToGrid(event, repo.id)} className="btn-add-to-grid">
+                                    {searchSection==="groups" && adding? <span className="loader-small"></span> : <>+</>}
+                                </button>
                             </tc>
                             
                         </tr>
