@@ -321,7 +321,7 @@ table {
   object-fit:contain;
   cursor: pointer;
   position:relative;
-  transition: opacity 0.2s ease-in-out;
+
 }
 
 .card:hover{
@@ -329,6 +329,12 @@ table {
    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.11), 0 0 6px rgba(0,0,0,.05);
    transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
    color: black;
+}
+
+.card:hover:after {
+  transform: scale(1);
+  transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
+  color: black;
 }
 
 .cards-headers {
@@ -483,8 +489,6 @@ table {
   animation-duration: 0.5s;
   animation-name: animate-fall-in;
 }
-
-
 
 @keyframes animate-fall-in {
   0% {

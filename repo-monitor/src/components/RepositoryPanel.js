@@ -18,8 +18,14 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
         // console.log("PERIODDDDDDDD: " + period)
         getRepoName(id)
         // console.log("REQ: ", request)
+        let requestUrl
 
         switch (request) {
+
+            case "repository/commits":
+                getCommits(id)
+                break;
+
             case "pipelines":
                 getPipelineStat(id)
                 break;
@@ -37,8 +43,9 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
                 break
 
             default:
-                let requestUrl = getUrl(id, request)
-                getRepoStat(requestUrl)
+                requestUrl = getUrl(id, request) +"?"
+                let statt = getRepoStat(requestUrl)
+                setStat(statt)
         }
         
     }, [request, period, id])
@@ -59,6 +66,49 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
         let dateFilter = period
         return (d >= dateFilter)
     }
+
+    let getCommits = async (id) => {
+        let branchUrl = getUrl(id, "/repository/branches")
+        let response = await fetchUrl(branchUrl)
+        let branches = await response.json()
+        let totalCommits = 0
+
+        await Promise.all(branches.map(async (b) => {
+            let commitUrl = getUrl(id, request) + "?ref_name=" + b.name
+            let commits = await getCommitsForBranch(commitUrl)
+            console.log(b.name + ": " +  commits.length + " Commits")
+            totalCommits += commits.length
+            return commits.length
+        }))
+      
+        setStat(totalCommits)
+    }
+
+    let getCommitsForBranch = async (requestUrl) => {
+        let commits = []
+        let page=0
+        while (true) { 
+            let response = await fetchUrl(`${requestUrl}&page=${page}&per_page=100`)
+            let data = await response.json()
+
+            console.log("DATAAAAAAAA: ", data)
+
+            data.forEach(commit => {
+                console.log("Looking at commit: ", commit)
+                let dateCreated = new Date(commit.created_at)
+                if (dateInRange(dateCreated)) {
+                    commits.push(commit.short_id)
+                }
+            })
+
+            console.log("COMMITS: ", commits)
+
+            let nextPage = response.headers.get("x-next-page")
+            if (!nextPage) return commits
+            page ++
+        }
+    }
+
 
     let getLastCommit = async (id) => {
         let data = await getJsonData(id, "repository/commits")
@@ -115,7 +165,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
         let page = 1
         
         while (true) { 
-            let response = await fetchUrl(`${requestUrl}?page=${page}&per_page=20`)
+            let response = await fetchUrl(`${requestUrl}&page=${page}&per_page=20`)
             
             let nextPage = response.headers.get("x-next-page")
             if (!nextPage) return page
@@ -132,10 +182,11 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
     }
 
     let getPageEntries = async (requestUrl, page) => {
-        let response = await fetchUrl(`${requestUrl}?page=${page}&per_page=20`)
+        let response = await fetchUrl(`${requestUrl}&page=${page}&per_page=20`)
+        console.log("GETTING: ", `${requestUrl}&page=${page}&per_page=20`)
         let data = await response.json()
         let numEntries = await getPageEntriesBeforeDate(data)
-        if (numEntries ===-1) {
+        if (numEntries === -1) {
             return 0
         } 
         return numEntries
@@ -154,15 +205,12 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
         let statistic, lastPageEntries
         
         if (pagesInRange ===0) {
-            statistic = 0
-            setStat(statistic)
+            return 0
         } else {
             lastPageEntries = await getPageEntries(requestUrl, pagesInRange)
-            statistic = ((pagesInRange-1) * 20) + lastPageEntries
-            setStat(statistic)
+            console.log("On Last Page there are: ", lastPageEntries)
+            return ((pagesInRange-1) * 20) + lastPageEntries
         }
-
-        setStat(statistic)
     }
 
     let getRepoName = async (id) => {
@@ -263,7 +311,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
             } 
                 
                 </h2>
-                <use href="/assets/icons-7b0fcccb8dc2c0d0883e05f97e4678621a71b996ab2d30bb42fafc906c1ee13f.svg#status_success"></use>
+                <div href="/assets/icons-7b0fcccb8dc2c0d0883e05f97e4678621a71b996ab2d30bb42fafc906c1ee13f.svg#status_success"></div>
             </div>
             
             
