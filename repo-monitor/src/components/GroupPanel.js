@@ -6,8 +6,7 @@ import pipelinePass from '../static/pipeline-pass.png'
 import pipelineFail from '../static/pipeline-fail.png'
 import noPipeline from '../static/no-pipeline.png'
 
-
-let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats, avgStat}) => {
+let GroupPanel = ({id, index, request, period, showHeaders, stats, setStats, avgStat}) => {
 
     let [repoName, setRepoName] = useState([])
     let [repoAuthor, setRepoAuthor] = useState([])
@@ -15,9 +14,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
     
     useEffect(() => {
         setStat(null)
-        // console.log("PERIODDDDDDDD: " + period)
-        getRepoName(id)
-        // console.log("REQ: ", request)
+        getGroupName(id)
 
         switch (request) {
             case "pipelines":
