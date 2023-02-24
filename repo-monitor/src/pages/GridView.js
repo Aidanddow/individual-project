@@ -38,8 +38,6 @@ let GridView = () => {
         ["All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate())],
         ["Start of Week", prevMonday],
     ]))
-
-    console.log(prevMonday)
                                                 
     let [period, setPeriod] = useState(new Date())
     
@@ -64,21 +62,28 @@ let GridView = () => {
 
     useEffect(() => {
 
-        console.log("STATS HAS BEEN CHANGED, NOW: ", stats)
+        if (metric.endpoint == "pipelines") return
+
         let tot = 0
-        stats.forEach(s => tot+=s)
+        
+        stats
+            .filter(s => typeof(s) == typeof(1))
+            .forEach(s => tot+=s)
+
         let numFilled = stats.filter(s => s != null).length
         
-        if (numFilled == 0) {
-            numFilled = 1
-        }
-        console.log("Number of stats processed: ", numFilled)
-        
+        if (numFilled == 0) numFilled = 1
 
         console.log("TOTAL: ", tot)
         console.log("AVG: ", tot/numFilled)
+
         setAvgStat(tot / numFilled)
     }, [stats, setStats, metric, period])
+
+    useEffect(() => {
+        // Set the average stat to 10, in case average calculation fails
+        setAvgStat(10)
+    }, [metric])
 
     let checkForToken = () => {
         const pat = localStorage.getItem("pat")
@@ -93,25 +98,25 @@ let GridView = () => {
     }
 
     let sortRepos = async (alg) => {
-        console.log("REPOS BEFORE: ", repos)
+        console.log("REPOS BEFORE: ", repos.map((id, index) => stats[index]))
+        
         let sortedRepos = [...repos]
             .map((id, index) => [id, stats[index] ? stats[index]: 0] )
             .sort( alg )
-        
-        console.log(sortedRepos)
 
-        // console.log("REPOS SORTED: ", sortedRepos)
         setStats( (stats) => sortedRepos.map(a => a[1]))
         setRepos( (repos) => sortedRepos.map(a => a[0]))
         console.log("REPOS AFTER: ", sortedRepos.map(a => a[0]))
     }
 
-    let colourRepos = async () => {
-        console.log("Colouring repos")
-        let tot = 0
-        stats.forEach(s => tot += s)
-        setAvgStat(tot / stats.length)
+    let sortAsc = (a,b) => {
+        if (a[1]>b[1]) return 1
+        else if (a[1]<b[1]) return -1
+        else return 0
+    }
 
+    let sortDsc = (a,b) => {
+        return -1 * sortAsc(a,b)
     }
 
     return (
@@ -124,7 +129,7 @@ let GridView = () => {
                         
                         <div className="row">
                             <div className="col-4">
-                                <h1 className="title set-grid-name">Untitled Grid</h1>
+                                <h2 className="title set-grid-name">Untitled Grid</h2>
                             </div>
 
                             <div className="col-8">
@@ -134,11 +139,11 @@ let GridView = () => {
                                     </li>
 
                                     <li className="option-button">
-                                        <button onClick={() => sortRepos((a, b) => a[1] > b[1])} className="btn btn-outline-primary">Sort Asc</button>
+                                        <button onClick={() => sortRepos(sortAsc)} className="btn btn-outline-primary">Sort Asc</button>
                                     </li>
 
                                     <li className="option-button">
-                                        <button onClick={() => sortRepos((a, b) => a[1] < b[1])} className="btn btn-outline-primary">Sort Desc</button>
+                                        <button onClick={() => sortRepos(sortDsc)} className="btn btn-outline-primary">Sort Desc</button>
                                     </li>
                                 
                                     <li className="option-button">
