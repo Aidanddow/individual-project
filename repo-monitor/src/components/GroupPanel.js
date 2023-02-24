@@ -6,8 +6,7 @@ import pipelinePass from '../static/pipeline-pass.png'
 import pipelineFail from '../static/pipeline-fail.png'
 import noPipeline from '../static/no-pipeline.png'
 
-
-let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats, avgStat}) => {
+let GroupPanel = ({id, index, request, period, showHeaders, stats, setStats, avgStat}) => {
 
     let [repoName, setRepoName] = useState([])
     let [repoAuthor, setRepoAuthor] = useState([])
@@ -15,9 +14,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
     
     useEffect(() => {
         setStat(null)
-        // console.log("PERIODDDDDDDD: " + period)
-        getRepoName(id)
-        // console.log("REQ: ", request)
+        getGroupName(id)
 
         switch (request) {
             case "pipelines":
@@ -94,21 +91,18 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
 
         notes = await notes.reduce(async (a, b) => await a + await b, 0)
 
-        // console.log("Notes: ", notes)
+        console.log("Notes: ", notes)
         setStat(notes)
     }
     
+
     let getPipelineStat = async (id) => {
         let data = await getJsonData(id, "pipelines")
-
+        // console.log("DATA: ", data)
         if (data.length ===0) {
             setStat("no-pipeline")
         } else {
-            if (data[0].status === "failed") {
-                setStat("pipeline-fail")
-            } else {
-                setStat("pipeline-pass")
-            }
+            setStat("pipeline-pass")
         }
     }
     
@@ -183,12 +177,9 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
 
             : children;
 
-    let getColour = (stat, avg, request) => {
-        let delta = (stat/avg) - 1
+    let getColour = (stat, avg) => {
+        const delta = (stat/avg) - 1
 
-        // Higher last commit day is bad
-        if (request === "last-commit") delta = -1 * delta
-        
         if (delta >= 0) {
             return 'green'
         }
@@ -207,7 +198,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
 
             <div id={
                 // If stat is null or request is for pipeline, don't show colour otherwise do
-                stat == null || request === "pipelines" ? '' : getColour(stat, avgStat, request)
+                stat == null || request === "pipelines" ? '' : getColour(stat, avgStat)
             }>
 
             {/* Disables hovertext if headers are enabled */}
