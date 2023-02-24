@@ -103,11 +103,17 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
 
     let getPipelineStat = async (id) => {
         let data = await getJsonData(id, "pipelines")
-        // console.log("DATA: ", data)
+
         if (data.length ===0) {
+            console.log("NO DATA")
             setStat("no-pipeline")
         } else {
-            setStat("pipeline-pass")
+            console.log("DATA IS: ", data[0])
+            if (data[0].status === "failed") {
+                setStat("pipeline-fail")
+            } else {
+                setStat("pipeline-pass")
+            }
         }
     }
     
@@ -219,7 +225,7 @@ let RepositoryPanel = ({id, index, request, period, showHeaders, stats, setStats
         
         <div className="card animate" id={showHeaders? "card-headers-on" : "card-headers-off" }>
 
-            <div id={stat==null ? '' : getColour(stat, avgStat)}>
+            <div id={stat==null || request === "pipelines" ? '' : getColour(stat, avgStat)}>
             <ShowHeaders condition={showHeaders}>
 
             {showHeaders ? 
