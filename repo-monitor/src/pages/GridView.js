@@ -1,11 +1,14 @@
 
 import { useEffect, useState } from "react"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import RepositoryGrid from "../components/RepositoryGrid";
 import RepositoryList from "../components/RepositoryList";
 
 let GridView = () => {
    
+    let { id } = useParams()
+    if (!id) id = 1
+    const grid = `grid${id}`
     const navigate = useNavigate()
     let [repos, setRepos] = useState([])
     let [showHeaders, setShowHeaders] = useState(false)
@@ -46,9 +49,9 @@ let GridView = () => {
         checkForToken()
 
         let r = async () => {
-            const initialRepos = await JSON.parse(localStorage.getItem("ids"))
+            const initialRepos = await JSON.parse(localStorage.getItem(grid))
             if (!initialRepos) {
-                localStorage.setItem("ids", "[]")
+                localStorage.setItem(grid, "[]")
             }
             setRepos(initialRepos)
             setPeriod(periods.get("1 Week"))
@@ -57,8 +60,17 @@ let GridView = () => {
     }, [])
 
     useEffect(() => {
-        localStorage.setItem("ids", JSON.stringify(repos))
+        localStorage.setItem(grid, JSON.stringify(repos))
     }, [repos])
+
+    useEffect(() => {
+        let ids = localStorage.getItem(grid)
+        if (!ids) {
+            localStorage.setItem(grid, "[]")
+            ids = []
+        }
+        setRepos(ids)
+    }, [id])
 
     useEffect(() => {
 
@@ -93,7 +105,7 @@ let GridView = () => {
     }
 
     let clearGrid = () => {
-        localStorage.setItem("ids", "[]")   
+        localStorage.setItem(grid, "[]")   
         setRepos([])
     }
 
@@ -129,7 +141,7 @@ let GridView = () => {
                         
                         <div className="row">
                             <div className="col-4">
-                                <h2 className="title set-grid-name">Untitled Grid</h2>
+                                <h2 className="title set-grid-name">Untitled Grid {id}</h2>
                             </div>
 
                             <div className="col-8">
