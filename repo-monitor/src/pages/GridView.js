@@ -1,11 +1,14 @@
 
 import { useEffect, useState } from "react"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import RepositoryGrid from "../components/RepositoryGrid";
 import RepositoryList from "../components/RepositoryList";
 
 let GridView = () => {
    
+    let { id } = useParams()
+    if (!id) id = 1
+    let [gridName, setGridName] = useState(`Grid ${id}`)
     const navigate = useNavigate()
     let [repos, setRepos] = useState([])
     let [showHeaders, setShowHeaders] = useState(false)
@@ -46,9 +49,9 @@ let GridView = () => {
         checkForToken()
 
         let r = async () => {
-            const initialRepos = await JSON.parse(localStorage.getItem("ids"))
+            const initialRepos = await JSON.parse(localStorage.getItem(gridName))
             if (!initialRepos) {
-                localStorage.setItem("ids", "[]")
+                localStorage.setItem(gridName, "[]")
             }
             setRepos(initialRepos)
             setPeriod(periods.get("1 Week"))
@@ -57,8 +60,23 @@ let GridView = () => {
     }, [])
 
     useEffect(() => {
-        localStorage.setItem("ids", JSON.stringify(repos))
+        localStorage.setItem(gridName, JSON.stringify(repos))
     }, [repos])
+
+    useEffect(() => {
+        setRepos([])
+
+        const name = `Grid ${id}`
+        setGridName(name)
+        
+        let ids = JSON.parse(localStorage.getItem(name))
+
+        if (!ids) {
+            localStorage.setItem(name, "[]")
+            ids = []
+        }
+        setRepos(ids)
+    }, [id])
 
     useEffect(() => {
 
@@ -85,6 +103,15 @@ let GridView = () => {
         setAvgStat(10)
     }, [metric])
 
+
+    let changeGridName = async (oldName, newName) => {
+        // let reposs = localStorage.getItem(oldName)
+        // localStorage.setItem(newName, reposs)
+        // setGridName(newName)
+        // localStorage.removeItem(oldName)
+        console.log(`Changing from ${oldName} to ${newName}`)
+    }
+
     let checkForToken = () => {
         const pat = localStorage.getItem("pat")
         if (!pat) {
@@ -93,7 +120,7 @@ let GridView = () => {
     }
 
     let clearGrid = () => {
-        localStorage.setItem("ids", "[]")   
+        localStorage.setItem(gridName, "[]")   
         setRepos([])
     }
 
@@ -124,15 +151,20 @@ let GridView = () => {
             
             <div className="row">
 
-                <div className="col-9 griddd">
+                <div className="col-lg-9 griddd">
                     <div className="">
                         
                         <div className="row">
-                            <div className="col-4">
-                                <h2 className="title set-grid-name">Untitled Grid</h2>
+                            <div className="col-md-5">
+                                <h2 className="title set-grid-name" 
+                                    contentEditable="true" 
+                                    onInput={e => changeGridName(gridName, e.currentTarget.textContent)}
+                                >
+                                    {gridName}
+                                </h2>
                             </div>
 
-                            <div className="col-8">
+                            <div className="col-md-7">
                                 <ul className="options-list">
                                     <li className="option-button">
                                         <button onClick={() => setShowHeaders(!showHeaders)} className="btn btn-outline-primary">Toggle Headers</button>
@@ -154,7 +186,7 @@ let GridView = () => {
                         </div>
 
                         <div className="row metric-buttons">
-                            <div className="col-10">
+                            <div className="col-sm-10">
 
                                 {requests.map(req => (
                                     <button onClick={() => {setMetric(req) }} 
@@ -165,7 +197,7 @@ let GridView = () => {
                                 ))}
                             </div>
 
-                            <div className="col-2">
+                            <div className="col-sm-2">
                                 <select id="dropdown" onChange={(event) => setPeriod(new Date(event.target.value))} className="form-select" aria-label="Default select example">
                                     {[...periods.keys()].map((name) => (
                                         <option value={periods.get(name)}>{name}</option>
@@ -203,7 +235,7 @@ let GridView = () => {
                         </div>
                 </div>
             
-                <div className="col-3">
+                <div className="col-lg-3">
                     <RepositoryList gridRepos={repos} setGridRepos={setRepos}/>
                 </div> 
             </div>

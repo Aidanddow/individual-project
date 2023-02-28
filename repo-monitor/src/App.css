@@ -97,10 +97,15 @@ table {
 }
 
 
+.nav-item {
+  padding-left: 5px;
+  padding-right: 5px;
+}
 
 .navbar-search {
-  left: 50%;
+  left: 10%;
   margin:auto;
+  right: 20px;
 }
 
 .navbar-profile {
@@ -443,8 +448,8 @@ table {
 }
 
 .set-grid-name {
-
-  width:300px;
+  max-width:500px;
+  min-width: 400px;
 }
 
 .profile-picture {

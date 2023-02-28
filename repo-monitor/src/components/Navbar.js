@@ -5,7 +5,7 @@ import User from "../components/User"
 let Navbar = (props) => {
     
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
             <a className="navbar-brand application-name" href="#">
                 <h4>
                     Repo-Monitor
@@ -16,14 +16,20 @@ let Navbar = (props) => {
                 <ul className="navbar-nav ml-auto">
 
                     <li className="nav-item">
-                        <Link to="/grid" className="nav-link">
-                            Grid
+                        <Link to="/grid/1" className="nav-link">
+                            Grid 1
                         </Link>
                     </li>
 
                     <li className="nav-item">
-                        <Link to="/settoken" className="nav-link">
-                            Tokens
+                        <Link to="/grid/2" className="nav-link">
+                            Grid 2
+                        </Link>
+                    </li>
+
+                    <li className="nav-item">
+                        <Link to="/grid/3" className="nav-link">
+                            Grid 3
                         </Link>
                     </li>
 

@@ -21,7 +21,7 @@ root.render(
         <Route path="/" element={<GridView />} />
         <Route path="repository/:id" element={<Repository />} />
         <Route path="repository/:id/commit/:sha" element={<Commit />} />
-        <Route path="grid/" element={<GridView />} />
+        <Route path="grid/:id" element={<GridView />} />
         <Route path="settoken/" element={<SetToken />} />
         <Route path="developer/:id" element={<Developer />} />
       </Routes>
