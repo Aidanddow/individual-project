@@ -6,12 +6,16 @@ import RepositoryList from "../components/RepositoryList";
 
 let GridView = () => {
    
+    const navigate = useNavigate()
+
     let { id } = useParams()
-    if (!id) id = "grid1"
+    if (!id) id = "Untitled Grid"
+
     let [gridName, setGridName] = useState(id)
     let [updatedGridName, setUpdatedGridName] = useState(id)
-    const navigate = useNavigate()
+
     let [repos, setRepos] = useState([])
+
     let [showHeaders, setShowHeaders] = useState(false)
     let [avgStat, setAvgStat] = useState(null)
 
@@ -46,8 +50,8 @@ let GridView = () => {
     let [period, setPeriod] = useState(new Date())
     
     useEffect(() => {
-
         checkForToken()
+        checkGrids()
 
         let r = async () => {
             const initialRepos = await JSON.parse(localStorage.getItem(gridName))
@@ -104,19 +108,27 @@ let GridView = () => {
         setAvgStat(10)
     }, [metric])
 
-
-    let changeGridName = async (oldName, newName) => {
-        // let reposs = localStorage.getItem(oldName)
-        // localStorage.setItem(newName, reposs)
-        // setGridName(newName)
-        // localStorage.removeItem(oldName)
-        console.log(`Changing from ${oldName} to ${newName}`)
+    let getDefaultGrid = () => {
+        console.log("Getting Default")
+        let names = JSON.parse(localStorage.getItem("grid-names"))
+        if (!names) {
+            localStorage.setItem("grid-names", '["Untitled Grid"]')
+            navigate(`/grid/Untitled%20Grid`)
+        }
+        navigate(`/grid/${names[0]}`)
     }
-
     let checkForToken = () => {
         const pat = localStorage.getItem("pat")
         if (!pat) {
             navigate("/settoken")
+        }
+    }
+
+    let checkGrids = () => {
+        const grids = JSON.parse(localStorage.getItem("grid-names"))
+
+        if (!grids) {
+            localStorage.setItem("grid-names", "['Untitled Grid']")
         }
     }
 
@@ -169,8 +181,7 @@ let GridView = () => {
             
             <div className="row">
 
-                <div className="col-lg-9 griddd">
-                    <div className="">
+                <div className="col-lg-9 gridd">
                         
                         <div className="row">
                             <div className="col-md-4">
@@ -263,10 +274,9 @@ let GridView = () => {
                         </div>
                         }   
 
-                        </div>
                 </div>
             
-                <div className="col-lg-3">
+                <div className="col-lg-3 padd">
                     <RepositoryList gridRepos={repos} setGridRepos={setRepos}/>
                 </div> 
             </div>

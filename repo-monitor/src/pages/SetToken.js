@@ -7,7 +7,7 @@ let SetTokenModal = () => {
     let [token, setToken] = useState("")
 
     let [validating, setValidating] = useState(false)
-    
+
     let [validated, setValidated] = useState(false)
     let [error, setError] = useState("")
 
@@ -88,7 +88,8 @@ let SetTokenModal = () => {
                     {validating ? 
                         <span className="loader-small"></span>
                         : 
-                        <img src={rightArrow} className="search-logo" alt="Go"></img>}
+                        <img src={rightArrow} className="search-logo" alt="Go"></img>
+                    }
                 </button>
                 </div> 
             
@@ -97,9 +98,12 @@ let SetTokenModal = () => {
                 </div>
 
                 {validated === true ? 
-                <div className="validated-text">
-                    Validated
-                </div> : <></>}
+                    <div className="validated-text">
+                        Validated
+                    </div> 
+                    
+                    : <></>
+                }
             
             
 

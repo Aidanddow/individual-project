@@ -8,18 +8,28 @@ import { useEffect, useState } from "react"
 let Navbar = () => {
     
     const navigate = useNavigate()
-    let [grids, setGrids] = useState(JSON.parse(localStorage.getItem("grid-names")))
+    let [grids, setGrids] = useState( ["Grid 1"] )
 
     useEffect(() => {
-        console.log("RUNNING")
+
+        let r = async () => {
         let gridNames = JSON.parse(localStorage.getItem("grid-names"))
+
+        if (!gridNames) {
+            gridNames = ["Untitled Grid"]
+            localStorage.setItem("grid-names", JSON.stringify(gridNames))
+        }
+        
         setGrids(gridNames)
         console.log("GridNames: ", gridNames)
+        }
+
+        r()
     }, [])
 
     let addNewGrid = () => {
         let gridNames = JSON.parse(localStorage.getItem("grid-names"))
-        const num = grids.length
+        const num = grids.length + 1
         const gridName =`Grid ${num}`
         gridNames.push(gridName)
         localStorage.setItem("grid-names", JSON.stringify(gridNames))
