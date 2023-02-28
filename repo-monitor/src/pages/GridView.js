@@ -7,8 +7,9 @@ import RepositoryList from "../components/RepositoryList";
 let GridView = () => {
    
     let { id } = useParams()
-    if (!id) id = 1
-    let [gridName, setGridName] = useState(`Grid ${id}`)
+    if (!id) id = "grid1"
+    let [gridName, setGridName] = useState(id)
+    let [updatedGridName, setUpdatedGridName] = useState(id)
     const navigate = useNavigate()
     let [repos, setRepos] = useState([])
     let [showHeaders, setShowHeaders] = useState(false)
@@ -66,7 +67,7 @@ let GridView = () => {
     useEffect(() => {
         setRepos([])
 
-        const name = `Grid ${id}`
+        const name = id
         setGridName(name)
         
         let ids = JSON.parse(localStorage.getItem(name))
@@ -146,6 +147,23 @@ let GridView = () => {
         return -1 * sortAsc(a,b)
     }
 
+    let updateGridName = () => {
+        // Replace old grid name in grid names array with new one
+        let gridNames = JSON.parse(localStorage.getItem("grid-names"))
+        gridNames = gridNames.map(n => n === gridName ? updatedGridName : n)
+        localStorage.setItem("grid-names", JSON.stringify(gridNames))
+
+        // Replace old grid name key with new grid name
+        let grid = JSON.parse(localStorage.getItem(gridName))
+        localStorage.setItem(updatedGridName, JSON.stringify(grid))
+        localStorage.removeItem(gridName)
+
+        setGridName(updatedGridName)
+        navigate(`/grid/${updatedGridName}`)
+        
+        window.location.reload(false);
+    }
+
     return (
         <div className="repository-grid container-fluid">
             
@@ -155,17 +173,28 @@ let GridView = () => {
                     <div className="">
                         
                         <div className="row">
-                            <div className="col-md-5">
-                                <h2 className="title set-grid-name" 
-                                    contentEditable="true" 
-                                    onInput={e => changeGridName(gridName, e.currentTarget.textContent)}
-                                >
-                                    {gridName}
-                                </h2>
+                            <div className="col-md-4">
+                                <div className="row">
+                                    
+                                        <h2 className="title set-grid-name" 
+                                            contentEditable="true" 
+                                            onInput={e => setUpdatedGridName(e.currentTarget.textContent)}
+                                        >
+                                            {gridName}
+                                        </h2>
+                             
+                                  
+                                </div>
                             </div>
 
-                            <div className="col-md-7">
+                            <div className="col-md-8">
                                 <ul className="options-list">
+                                    {updatedGridName !== gridName ?
+                                    <li className="option-button">
+                                        <button onClick={() => updateGridName()}className="btn btn-outline-primary">Update Name</button>
+                                    </li>
+                                    : <></>
+                                    }
                                     <li className="option-button">
                                         <button onClick={() => setShowHeaders(!showHeaders)} className="btn btn-outline-primary">Toggle Headers</button>
                                     </li>
@@ -181,6 +210,8 @@ let GridView = () => {
                                     <li className="option-button">
                                         <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
                                     </li>
+
+                                    
                                 </ul>
                             </div>
                         </div>

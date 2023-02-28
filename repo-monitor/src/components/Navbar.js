@@ -1,8 +1,31 @@
 import { Link } from "react-router-dom";
 import RepositorySearch from "../components/RepositorySearch"
 import User from "../components/User"
+import { useNavigate } from 'react-router-dom';
 
-let Navbar = (props) => {
+import { useEffect, useState } from "react"
+
+let Navbar = () => {
+    
+    const navigate = useNavigate()
+    let [grids, setGrids] = useState(JSON.parse(localStorage.getItem("grid-names")))
+
+    useEffect(() => {
+        console.log("RUNNING")
+        let gridNames = JSON.parse(localStorage.getItem("grid-names"))
+        setGrids(gridNames)
+        console.log("GridNames: ", gridNames)
+    }, [])
+
+    let addNewGrid = () => {
+        let gridNames = JSON.parse(localStorage.getItem("grid-names"))
+        const num = grids.length
+        const gridName =`Grid ${num}`
+        gridNames.push(gridName)
+        localStorage.setItem("grid-names", JSON.stringify(gridNames))
+        setGrids(gridNames)
+        navigate(`/grid/${gridName}`)
+    }
     
     return (
         <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
@@ -14,25 +37,26 @@ let Navbar = (props) => {
 
             <div className="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul className="navbar-nav ml-auto">
+                    {
+                        grids.map( (g) => (
+                            <li className="nav-item">
+                                <Link to={`/grid/${g}`} className="nav-link">
+                                    {g}
+                                </Link>
+                            </li>
+                        ))
+                    }
 
-                    <li className="nav-item">
-                        <Link to="/grid/1" className="nav-link">
-                            Grid 1
-                        </Link>
-                    </li>
-
-                    <li className="nav-item">
-                        <Link to="/grid/2" className="nav-link">
-                            Grid 2
-                        </Link>
-                    </li>
-
-                    <li className="nav-item">
-                        <Link to="/grid/3" className="nav-link">
-                            Grid 3
-                        </Link>
-                    </li>
-
+                    {grids.length < 5?
+                        <li className="nav-item">
+                            <a onClick={() => addNewGrid()} className="nav-link">
+                                +
+                            </a>
+                        </li>
+                    : <></>
+                    }
+                    
+                    
                     {/* <li className="navbar-search">
                         <RepositorySearch />
                     </li> */}
