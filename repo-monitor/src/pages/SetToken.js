@@ -2,7 +2,7 @@
 import { useState } from "react"
 import rightArrow from '../static/arrow.png'
 
-let SetTokenModal = () => {
+let SetToken = () => {
 
     let [token, setToken] = useState("")
 
@@ -21,7 +21,6 @@ let SetTokenModal = () => {
         
         let response = await fetch(url, {
             headers: {
-                // "PRIVATE-TOKEN": localStorage.getItem("pat")
                 "PRIVATE-TOKEN": token
             }
         })
@@ -105,8 +104,6 @@ let SetTokenModal = () => {
                     : <></>
                 }
             
-            
-
                 <ol className="token-instructions">
                     <li>
                         Go to https://stgit.dcs.gla.ac.uk
@@ -139,4 +136,4 @@ let SetTokenModal = () => {
     );
 };
 
-export default SetTokenModal
+export default SetToken

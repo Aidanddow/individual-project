@@ -1,27 +1,25 @@
-import { Link } from "react-router-dom";
-import RepositorySearch from "../components/RepositorySearch"
-import User from "../components/User"
-import { useNavigate } from 'react-router-dom';
 
 import { useEffect, useState } from "react"
+import { useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import ProfilePic from "./ProfilePic"
 
 let Navbar = () => {
     
     const navigate = useNavigate()
-    let [grids, setGrids] = useState( ["Grid 1"] )
+    let [grids, setGrids] = useState( ["Untitled Grid 1"] )
 
     useEffect(() => {
 
+        // Get list of grid names, if none, create a grid "Untitled Grid 1"
         let r = async () => {
-        let gridNames = JSON.parse(localStorage.getItem("grid-names"))
+            let gridNames = JSON.parse(localStorage.getItem("grid-names"))
 
-        if (!gridNames) {
-            gridNames = ["Untitled Grid"]
-            localStorage.setItem("grid-names", JSON.stringify(gridNames))
-        }
-        
-        setGrids(gridNames)
-        console.log("GridNames: ", gridNames)
+            if (!gridNames) {
+                gridNames = ["Untitled Grid 1"]
+                localStorage.setItem("grid-names", JSON.stringify(gridNames))
+            }
+            setGrids(gridNames)
         }
 
         r()
@@ -29,17 +27,16 @@ let Navbar = () => {
 
     let addNewGrid = () => {
         let gridNames = JSON.parse(localStorage.getItem("grid-names"))
-        const num = grids.length + 1
-        const gridName =`Grid ${num}`
-        gridNames.push(gridName)
+        const newGridName =`Untitled Grid ${grids.length + 1}`
+        gridNames.push(newGridName)
         localStorage.setItem("grid-names", JSON.stringify(gridNames))
         setGrids(gridNames)
-        navigate(`/grid/${gridName}`)
+        navigate(`/grid/${newGridName}`)
     }
     
     return (
         <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
-            <a className="navbar-brand application-name" href="#">
+            <a className="navbar-brand application-name" href="/">
                 <h4>
                     Repo-Monitor
                 </h4>
@@ -48,8 +45,8 @@ let Navbar = () => {
             <div className="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul className="navbar-nav ml-auto">
                     {
-                        grids.map( (g) => (
-                            <li className="nav-item">
+                        grids.map( (g, index) => (
+                            <li className="nav-item" key={`Grid${index}`}>
                                 <Link to={`/grid/${g}`} className="nav-link">
                                     {g}
                                 </Link>
@@ -58,26 +55,19 @@ let Navbar = () => {
                     }
 
                     {grids.length < 5?
-                        <li className="nav-item">
+                        <li className="nav-item" key="addNewGrid">
                             <a onClick={() => addNewGrid()} className="nav-link">
                                 +
                             </a>
                         </li>
                     : <></>
                     }
-                    
-                    
-                    {/* <li className="navbar-search">
-                        <RepositorySearch />
-                    </li> */}
 
-                    <li className="navbar-profile">
+                    <li className="navbar-profile" key="profilePic">
                         <Link to="/settoken" className="nav-link">
-                            <User />
+                            <ProfilePic />
                         </Link>
                     </li>
-
-                    
                 </ul>
             </div>
 

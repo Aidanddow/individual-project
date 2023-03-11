@@ -1,18 +1,18 @@
 
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom";
-import ShowDiff from '../components/ShowDiff'
 import { getJsonData, fetchData } from "../utils.js"
+import ShowDiff from '../components/ShowDiff'
 
 let Commit = () => {
+    
+    // Get ID and commit SHA from URL
     const { id, sha } = useParams()
 
     let [diff, setDiff] = useState(null)
     let [commit, setCommit] = useState([])
 
     useEffect(() => {
-        console.log("ID: " + id)
-        console.log("SHA: " + sha)
         getCommit(id, sha)
         getDiff(id, sha)
     }, [])
@@ -24,54 +24,51 @@ let Commit = () => {
     let getDiff = async (id, sha) => {
         let request = getCommitRequest(id, sha, "diff")
         const data = await getJsonData(id, request)
-        console.log(data)
-       
         setDiff(data)
     }
 
     let getCommit = async (id, sha) => {
         let request = getCommitRequest(id, sha, "")
-        console.log("REQ: ", request)
         const response = await fetchData(id, request)
         
         if (response.ok) {
             let data = await response.json()
-            console.table(data)
 
-            if (!data.stats) {
-                console.log("ERROR")
-            } else {
-                console.log("SUCCESS")
-                console.log(data.message)
+            if (data.stats) {
                 setCommit(data)
             }
-
-        } else {
-            console.log("ERROR!")
-        }
+        } 
     }
 
     let formatTime = (timeStr) => {
-        return timeStr? timeStr.substring(0,10) : timeStr
+        return timeStr
     }
-
 
     return (
         <div className="container-fluid">
             
-            <h1>Commit Diff</h1>
-            {commit.length ===0 ? 
-            <h2>Commit info not found.</h2> :
-            <>
-            <Link to={`/repository/${id}`} className="btn btn-outline-primary">Back to Repository</Link>
-            <h3>{commit.message}</h3>
-            <h4>Written by {commit.author_name} on {formatTime(commit.authored_date)}</h4> 
-            <h5>This commit has {commit.stats.additions} additions, {commit.stats.deletions} deletions, and {commit.stats.total} total</h5>
-            </>
-            }
+            <div className="row">
+                <div className="col-1">
+                    <Link to={`/repository/${id}`} className="btn btn-outline-secondary back-button">Back</Link>
+                </div>
+                
+                <h1 className="col-2"></h1>
+            </div>
             
+            {commit.length === 0 ? 
+                <h2>Commit info not found.</h2> 
+                : 
+                <>
+                    <h2>{commit.message}</h2>
+                    <h4>Written by {commit.author_name} on {formatTime(commit.authored_date)}</h4> 
+                    <h5>This commit has {commit.stats.additions} additions, {commit.stats.deletions} deletions, and {commit.stats.total} total</h5>
+                </>
+            }
 
-            {diff ? <ShowDiff diffStr={diff}/> : (<h3>LOADING...</h3>)}
+            {diff ? 
+                <ShowDiff diffArray={diff}/> 
+                : <span className="loader"></span> 
+            }
             
         </div>
     )

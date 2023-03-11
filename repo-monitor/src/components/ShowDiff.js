@@ -1,12 +1,19 @@
 
-let ShowDiff = ( {diffStr} ) => {
+/*
+ * ShowDiff
+ *
+ * @param {diff[]} diffArray - an array of diff objects
+ */
+let ShowDiff = ( {diffArray} ) => {
     return (
         <ul className="diff-list">
-            {diffStr.map( (diffFile) => (
-                <li>
-                    
+
+            {diffArray.map( (diffFile, index) => (
+                <li key={index}>
+
                     <ul className="diff-list" id="file-diff-list">
                         <h5>{diffFile.new_path}</h5>
+
                         {diffFile.diff.split("\n").map( 
                             (diffLine) => (
                                 <li className={(diffLine.startsWith("+") ? "diff-addition" : 
@@ -15,11 +22,10 @@ let ShowDiff = ( {diffStr} ) => {
                                 </li>
                             ))}
                     </ul>
-                    <br />
+                    <br/>
                 </li>
-            )) 
-        }
-            
+            ))}
+
         </ul>
     )
 }

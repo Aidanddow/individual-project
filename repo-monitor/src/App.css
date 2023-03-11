@@ -73,13 +73,13 @@ table {
 
 .gridd {
   background-color: white;
-  border: 1px solid rgb(230, 230, 230);
+  border: 1px solid rgb(210, 210, 210);
   border-radius: 5px;
   padding:10px;
 }
 
 .repository-search-list {
-  border: 1px solid rgb(230, 230, 230);
+  border: 1px solid rgb(210, 210, 210);
   background-color: white;
   border-radius: 5px;
   padding:10px;
@@ -149,7 +149,7 @@ table {
 .diff-list {
   list-style: none;
   padding-left: 0;
-  width:85%;
+  background-color: white;
 }
 
 #file-diff-list {
@@ -167,6 +167,10 @@ table {
   background-color: rgba(251, 200, 200, 0.313);
 }
 
+.back-button {
+  margin-top: 5px;
+}
+
 .repository-search {
   margin-top: 0px;
   border: 1px solid rgb(227, 227, 227);
@@ -174,8 +178,7 @@ table {
   border-radius: 10px 0px 0px 10px;
   padding:6px;
   border-right: none;
-  max-width:300px;
-  min-width:100px;
+  width:100%;
 }
 
 .gotorepo {
@@ -248,7 +251,7 @@ table {
 
 .no-repos {
 
-  color: rgb(120, 120, 120);
+  color: rgb(170, 170, 170);
   margin: auto;
   margin-top: 150px;
   text-align: center;

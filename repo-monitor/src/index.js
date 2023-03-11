@@ -5,7 +5,6 @@ import './index.css';
 import App from './App'
 import Repository from './pages/Repository'
 import Commit from './pages/Commit'
-import Developer from './pages/Developer'
 import GridView from './pages/GridView'
 import SetToken from "./pages/SetToken"
 import Navbar from './components/Navbar'
@@ -23,7 +22,6 @@ root.render(
         <Route path="repository/:id/commit/:sha" element={<Commit />} />
         <Route path="grid/:id" element={<GridView />} />
         <Route path="settoken/" element={<SetToken />} />
-        <Route path="developer/:id" element={<Developer />} />
       </Routes>
     
   </BrowserRouter>

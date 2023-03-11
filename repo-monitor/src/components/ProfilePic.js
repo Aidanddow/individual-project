@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { fetchUrl } from "../utils.js"
 import noUserIcon from "../static/user.png"
 
-let User = () => {
+let ProfilePic = () => {
 
     let [user, setUser] = useState({})
 
@@ -30,4 +30,4 @@ let User = () => {
     )
 }
 
-export default User
+export default ProfilePic

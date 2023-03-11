@@ -1,15 +1,15 @@
 
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from 'react-router-dom';
-import RepositoryGrid from "../components/RepositoryGrid";
-import RepositoryList from "../components/RepositoryList";
+import RepositoryPanel from "../components/RepositoryPanel";
+import RepositorySearch from "../components/RepositorySearch";
 
 let GridView = () => {
    
     const navigate = useNavigate()
 
     let { id } = useParams()
-    if (!id) id = "Untitled Grid"
+    if (!id) id = "Untitled Grid 1"
 
     let [gridName, setGridName] = useState(id)
     let [updatedGridName, setUpdatedGridName] = useState(id)
@@ -49,6 +49,7 @@ let GridView = () => {
                                                 
     let [period, setPeriod] = useState(new Date())
     
+    // Initialize grid, set metric and period.
     useEffect(() => {
         checkForToken()
         checkGrids()
@@ -57,6 +58,7 @@ let GridView = () => {
             const initialRepos = await JSON.parse(localStorage.getItem(gridName))
             if (!initialRepos) {
                 localStorage.setItem(gridName, "[]")
+                initialRepos = []
             }
             setRepos(initialRepos)
             setPeriod(periods.get("1 Week"))
@@ -64,15 +66,18 @@ let GridView = () => {
         r()
     }, [])
 
+    // Each time repos changes, reflect changes in localStorage
     useEffect(() => {
         localStorage.setItem(gridName, JSON.stringify(repos))
     }, [repos])
 
+    // When the grid is changed, remove repos from grid and load new repos
     useEffect(() => {
         setRepos([])
 
         const name = id
         setGridName(name)
+        setUpdatedGridName(name)
         
         let ids = JSON.parse(localStorage.getItem(name))
 
@@ -83,40 +88,22 @@ let GridView = () => {
         setRepos(ids)
     }, [id])
 
+    // Each time the stats array changes, compute the average stat
     useEffect(() => {
-
         if (metric.endpoint == "pipelines") return
 
-        let tot = 0
-        
+        let statsSum = 0
         stats
             .filter(s => typeof(s) == typeof(1))
-            .forEach(s => tot+=s)
+            .forEach(s => statsSum += s)
 
-        let numFilled = stats.filter(s => s != null).length
+        let numFilledStats = stats.filter(s => s != null).length
         
-        if (numFilled == 0) numFilled = 1
+        if (numFilledStats == 0) numFilledStats = 1
 
-        console.log("TOTAL: ", tot)
-        console.log("AVG: ", tot/numFilled)
-
-        setAvgStat(tot / numFilled)
+        setAvgStat(statsSum / numFilledStats)
     }, [stats, setStats, metric, period])
 
-    useEffect(() => {
-        // Set the average stat to 10, in case average calculation fails
-        setAvgStat(10)
-    }, [metric])
-
-    let getDefaultGrid = () => {
-        console.log("Getting Default")
-        let names = JSON.parse(localStorage.getItem("grid-names"))
-        if (!names) {
-            localStorage.setItem("grid-names", '["Untitled Grid"]')
-            navigate(`/grid/Untitled%20Grid`)
-        }
-        navigate(`/grid/${names[0]}`)
-    }
     let checkForToken = () => {
         const pat = localStorage.getItem("pat")
         if (!pat) {
@@ -124,6 +111,7 @@ let GridView = () => {
         }
     }
 
+    // If no grids have been made yet, create one called "Untitled Grid"
     let checkGrids = () => {
         const grids = JSON.parse(localStorage.getItem("grid-names"))
 
@@ -183,105 +171,114 @@ let GridView = () => {
 
                 <div className="col-lg-9 gridd">
                         
-                        <div className="row">
-                            <div className="col-md-4">
-                                <div className="row">
-                                    
-                                        <h2 className="title set-grid-name" 
-                                            contentEditable="true" 
-                                            onInput={e => setUpdatedGridName(e.currentTarget.textContent)}
-                                        >
-                                            {gridName}
-                                        </h2>
-                             
-                                  
-                                </div>
+                    <div className="row">
+                        <div className="col-md-4">
+                            <div className="row">
+                                
+                                    <h2 className="title set-grid-name" 
+                                        contentEditable="true" 
+                                        onInput={e => setUpdatedGridName(e.currentTarget.textContent)}
+                                    >
+                                        {gridName}
+                                    </h2>
+                            
+                                
                             </div>
+                        </div>
 
-                            <div className="col-md-8">
-                                <ul className="options-list">
-                                    {updatedGridName !== gridName ?
-                                    <li className="option-button">
+                        <div className="col-md-8">
+                            <ul className="options-list">
+                                {updatedGridName !== gridName ?
+                                    <li className="option-button" key="updateName">
                                         <button onClick={() => updateGridName()}className="btn btn-outline-primary">Update Name</button>
                                     </li>
-                                    : <></>
-                                    }
-                                    <li className="option-button">
-                                        <button onClick={() => setShowHeaders(!showHeaders)} className="btn btn-outline-primary">Toggle Headers</button>
-                                    </li>
+                                : <></>
+                                }
+                                <li className="option-button" key="showHeaders">
+                                    <button onClick={() => setShowHeaders(!showHeaders)} className="btn btn-outline-primary">Toggle Headers</button>
+                                </li>
 
-                                    <li className="option-button">
-                                        <button onClick={() => sortRepos(sortAsc)} className="btn btn-outline-primary">Sort Asc</button>
-                                    </li>
+                                <li className="option-button" key="sortAsc">
+                                    <button onClick={() => sortRepos(sortAsc)} className="btn btn-outline-primary">Sort Asc</button>
+                                </li>
 
-                                    <li className="option-button">
-                                        <button onClick={() => sortRepos(sortDsc)} className="btn btn-outline-primary">Sort Desc</button>
-                                    </li>
-                                
-                                    <li className="option-button">
-                                        <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
-                                    </li>
+                                <li className="option-button" key="sortDsc">
+                                    <button onClick={() => sortRepos(sortDsc)} className="btn btn-outline-primary">Sort Desc</button>
+                                </li>
+                            
+                                <li className="option-button" key="clearGrid">
+                                    <button onClick={() => clearGrid()} className="btn btn-outline-danger">Clear Grid</button>
+                                </li>
 
-                                    
-                                </ul>
-                            </div>
+
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="row metric-buttons">
+                        <div className="col-sm-10">
+
+                            {requests.map(req => (
+                                <button onClick={() => {setMetric(req) }} 
+                                    className={`metric-button
+                                    ${metric===req && "active"}`}
+                                    key={req.endpoint}>
+                                        {req.name}
+                                </button>
+                            ))}
                         </div>
 
-                        <div className="row metric-buttons">
-                            <div className="col-sm-10">
-
-                                {requests.map(req => (
-                                    <button onClick={() => {setMetric(req) }} 
-                                        className={`metric-button
-                                        ${metric===req && "active"}`}>
-                                            {req.name}
-                                    </button>
+                        <div className="col-sm-2">
+                            <select id="dropdown" onChange={(event) => setPeriod(new Date(event.target.value))} className="form-select" aria-label="Default select example">
+                                {[...periods.keys()].map((name) => (
+                                    <option value={periods.get(name)}>{name}</option>
                                 ))}
-                            </div>
 
-                            <div className="col-sm-2">
-                                <select id="dropdown" onChange={(event) => setPeriod(new Date(event.target.value))} className="form-select" aria-label="Default select example">
-                                    {[...periods.keys()].map((name) => (
-                                        <option value={periods.get(name)}>{name}</option>
-                                    ))}
-
-                                </select>
-                            </div>
-
+                            </select>
                         </div>
+
+                    </div>
                                 
-                        {repos.length !== 0 ? 
-                            <div className="animate">
-                            <RepositoryGrid 
-                                metric={metric}
-                                repos={repos}
-                                period={period}
-                                showHeaders={showHeaders}
-                                stats={stats}
-                                setStats={setStats}
-                                setRepos={setRepos}
-                                avgStat={avgStat}
-                            /> 
+                    {repos.length !== 0 ? 
+                        <div className="repo-grid">
+                                
+                                <div className={showHeaders? "cards-headers" : "cards-no-headers"}>
+                                    {repos.map((repo, index) => (
+                                        <div key={`repository${index}`}>
+                                            
+                                            <RepositoryPanel 
+                                                id={repo} 
+                                                request={metric.endpoint} 
+                                                period={period} 
+                                                stats={stats} 
+                                                index={index} 
+                                                setStats={setStats}
+                                                avgStat={avgStat}
+                                                showHeaders={showHeaders} 
+                                            />
+                                        
+                                        </div>
+                                    ))}       
+                                </div>
+
                             </div>
-                        : 
-                        <div className="no-repos animate">
-                            <h3>
-                                You currently have no repositories in the grid!
-                            </h3>
-                            <h5>
-                                Add repositories by searching!
-                            </h5>
-                        </div>
-                        }   
+                    : 
+                    <div className="no-repos animate">
+                        <h3>
+                            {id} is currently empty
+                        </h3>
+                        <h5>
+                            Add repositories by searching!
+                        </h5>
+                    </div>
+                    }   
 
                 </div>
             
                 <div className="col-lg-3 padd">
-                    <RepositoryList gridRepos={repos} setGridRepos={setRepos}/>
+                    <RepositorySearch gridRepos={repos} setGridRepos={setRepos}/>
                 </div> 
             </div>
-        
-    
         </div>
         
     )
