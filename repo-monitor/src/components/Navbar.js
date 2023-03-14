@@ -20,10 +20,16 @@ let Navbar = () => {
                 localStorage.setItem("grid-names", JSON.stringify(gridNames))
             }
             setGrids(gridNames)
+
+            // If navigating to "/" redirect to first stored grid
+            if (window.location.pathname === "/") {
+                console.log("YASSSS")
+                navigate(`/grid/${gridNames[0]}`)
+            }
         }
 
         r()
-    }, [])
+    }, [navigate])
 
     let addNewGrid = () => {
         let gridNames = JSON.parse(localStorage.getItem("grid-names"))
@@ -56,9 +62,9 @@ let Navbar = () => {
 
                     {grids.length < 5?
                         <li className="nav-item" key="addNewGrid">
-                            <a onClick={() => addNewGrid()} className="nav-link">
+                            <button onClick={() => addNewGrid()} className="nav-link add-grid-btn">
                                 +
-                            </a>
+                            </button>
                         </li>
                     : <></>
                     }

@@ -7,9 +7,7 @@ import RepositorySearch from "../components/RepositorySearch";
 let GridView = () => {
    
     const navigate = useNavigate()
-
     let { id } = useParams()
-    if (!id) id = "Untitled Grid 1"
 
     let [gridName, setGridName] = useState(id)
     let [updatedGridName, setUpdatedGridName] = useState(id)
@@ -17,9 +15,24 @@ let GridView = () => {
     let [repos, setRepos] = useState([])
 
     let [showHeaders, setShowHeaders] = useState(false)
+    let [stats, setStats] = useState([])
     let [avgStat, setAvgStat] = useState(null)
 
-    const requestsArr = [
+    const now = new Date();
+
+    var prevMonday = new Date();
+    prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + 6) % 7);
+
+    let periods = new Map([
+        ["1 Week", new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)],
+        ["1 Month", new Date(now.getFullYear(), now.getMonth()-1, now.getDate())],
+        ["3 Months", new Date(now.getFullYear(), now.getMonth()-3, now.getDate())],
+        ["1 Year", new Date(now.getFullYear()-1, now.getMonth(), now.getDate())],
+        ["All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate())],
+        ["Start of Week", prevMonday],
+    ])
+
+    const requests = [
         { name: "Commits", endpoint: "repository/commits" },
         { name: "Merge Requests", endpoint: "merge_requests" },
         { name: "Open Issues", endpoint: "issues" },
@@ -28,26 +41,8 @@ let GridView = () => {
         { name: "Last Commit (Days)", endpoint: "last-commit" },
     ]
 
-    const [requests] = useState(requestsArr)
-
-    let [metric, setMetric] = useState(requestsArr[0])
-    let [stats, setStats] = useState([])
-
-    const now = new Date();
-
-    var prevMonday = new Date();
-    prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + 6) % 7);
-
-    let [periods] = useState(new Map([
-        ["1 Week", new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)],
-        ["1 Month", new Date(now.getFullYear(), now.getMonth()-1, now.getDate())],
-        ["3 Months", new Date(now.getFullYear(), now.getMonth()-3, now.getDate())],
-        ["1 Year", new Date(now.getFullYear()-1, now.getMonth(), now.getDate())],
-        ["All-Time", new Date(now.getFullYear()-50, now.getMonth(), now.getDate())],
-        ["Start of Week", prevMonday],
-    ]))
-                                                
     let [period, setPeriod] = useState(new Date())
+    let [metric, setMetric] = useState(requests[0])
     
     // Initialize grid, set metric and period.
     useEffect(() => {
@@ -55,7 +50,7 @@ let GridView = () => {
         checkGrids()
 
         let r = async () => {
-            const initialRepos = await JSON.parse(localStorage.getItem(gridName))
+            let initialRepos = await JSON.parse(localStorage.getItem(gridName))
             if (!initialRepos) {
                 localStorage.setItem(gridName, "[]")
                 initialRepos = []
@@ -64,12 +59,14 @@ let GridView = () => {
             setPeriod(periods.get("1 Week"))
         }
         r()
+        
+    // eslint-disable-next-line
     }, [])
 
     // Each time repos changes, reflect changes in localStorage
     useEffect(() => {
         localStorage.setItem(gridName, JSON.stringify(repos))
-    }, [repos])
+    }, [repos, gridName])
 
     // When the grid is changed, remove repos from grid and load new repos
     useEffect(() => {
@@ -90,16 +87,16 @@ let GridView = () => {
 
     // Each time the stats array changes, compute the average stat
     useEffect(() => {
-        if (metric.endpoint == "pipelines") return
+        if (metric.endpoint === "pipelines") return
 
         let statsSum = 0
         stats
-            .filter(s => typeof(s) == typeof(1))
+            .filter(s => typeof(s) === typeof(1))
             .forEach(s => statsSum += s)
 
         let numFilledStats = stats.filter(s => s != null).length
         
-        if (numFilledStats == 0) numFilledStats = 1
+        if (numFilledStats === 0) numFilledStats = 1
 
         setAvgStat(statsSum / numFilledStats)
     }, [stats, setStats, metric, period])
@@ -221,7 +218,7 @@ let GridView = () => {
                             {requests.map(req => (
                                 <button onClick={() => {setMetric(req) }} 
                                     className={`metric-button
-                                    ${metric===req && "active"}`}
+                                    ${metric.endpoint === req.endpoint && "active"}`}
                                     key={req.endpoint}>
                                         {req.name}
                                 </button>
@@ -241,29 +238,24 @@ let GridView = () => {
                                 
                     {repos.length !== 0 ? 
                         <div className="repo-grid">
-                                
-                                <div className={showHeaders? "cards-headers" : "cards-no-headers"}>
-                                    {repos.map((repo, index) => (
-                                        <div key={`repository${index}`}>
-                                            
-                                            <RepositoryPanel 
-                                                id={repo} 
-                                                request={metric.endpoint} 
-                                                period={period} 
-                                                stats={stats} 
-                                                index={index} 
-                                                setStats={setStats}
-                                                avgStat={avgStat}
-                                                showHeaders={showHeaders} 
-                                            />
-                                        
-                                        </div>
-                                    ))}       
-                                </div>
+                            <div data-testid="repositories" className={showHeaders? "cards-headers" : "cards-no-headers"} >
+                                {repos.map((repo, index) => (
+                                        <RepositoryPanel 
+                                            id={repo} 
+                                            request={metric.endpoint} 
+                                            period={period} 
+                                            stats={stats} 
+                                            index={index} 
+                                            setStats={setStats}
+                                            avgStat={avgStat}
+                                            showHeaders={showHeaders} 
+                                        />
+                                ))}       
+                            </div>
 
                             </div>
                     : 
-                    <div className="no-repos animate">
+                    <div className="no-repos animate" data-testid="norepos">
                         <h3>
                             {id} is currently empty
                         </h3>

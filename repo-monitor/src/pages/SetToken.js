@@ -9,7 +9,7 @@ let SetToken = () => {
     let [validating, setValidating] = useState(false)
 
     let [validated, setValidated] = useState(false)
-    let [error, setError] = useState("")
+    let [error, setError] = useState(false)
 
     let validateToken = async (token) => {
         
@@ -26,7 +26,7 @@ let SetToken = () => {
         })
 
         if (response.status === 401) {
-            setError("Invalid Token!")
+            setError(true)
             return false
         }
         return true
@@ -38,7 +38,7 @@ let SetToken = () => {
     }
 
     let handleSubmittedToken = async (token) => {
-        setError("")
+        setError(false)
         setValidating(true)
         console.log("Validating")
 
@@ -80,10 +80,11 @@ let SetToken = () => {
                         onKeyDown={handleKeyDown}
                         value={token}
                         placeholder="Enter Token"
+                        data-testid="token-input"
                         name="Repository ID"/>
                 </form>
 
-                <button onClick={handleSubmit} className="gotorepo">
+                <button onClick={handleSubmit} className="gotorepo" data-testid="validate-token-btn">
                     {validating ? 
                         <span className="loader-small"></span>
                         : 
@@ -92,8 +93,8 @@ let SetToken = () => {
                 </button>
                 </div> 
             
-                <div className="error">
-                    {error}
+                <div className={error ? "error" : "hidden"}  data-testid="token-error-text">
+                    Invalid Token
                 </div>
 
                 {validated === true ? 
