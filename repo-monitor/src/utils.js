@@ -1,30 +1,32 @@
 
+// Variable to set gitlab instance
+const GITLAB_INSTANCE = "stgit.dcs.gla.ac.uk"
 
-// export const getUrl = (id, request, section = "projects") => {
-//     return `https://stgit.dcs.gla.ac.uk/api/v4//projects/${id}/${request}`
-// }
-
-
+// Get the url for a request
 export const getUrl = (id, request, section="projects") => {
-    return `https://stgit.dcs.gla.ac.uk/api/v4//${section}/${id}/${request}`
+    return `https://${GITLAB_INSTANCE}/api/v4//${section}/${id}/${request}`
 }
 
+// Get the url to search in a section
 export const fetchSearch = async (section, search) => {
-    let requestUrl =  `https://stgit.dcs.gla.ac.uk/api/v4//${section}?search=${search}&per_page=100`
+    let requestUrl = `https://${GITLAB_INSTANCE}/api/v4//${section}?search=${search}&per_page=100`
     return fetchUrl(requestUrl)
 }
 
+// Fetch the response from request
 export const fetchData = async (id, request, section="projects") => {
     let requestUrl = getUrl(id, request, section)
     return fetchUrl(requestUrl)
 }
 
+// Fetch response from request, then convert to JSON
 export const getJsonData = async (id, request, section="projects") => {
     let response = await fetchData(id, request, section)
     let data = await response.json()
     return data
 }
 
+// Fetch response from request url
 export const fetchUrl = async (requestUrl) => {
     let token = localStorage.getItem("pat")
 
@@ -44,6 +46,5 @@ export const getDaysSinceCommit = (timeStr) => {
 
     const delta = today.getTime() - date.getTime()
     const diffInDays = Math.round(delta / oneDay);
-    // daysAgo. setDate(date.getDate() - numOfDays)
     return diffInDays
 }

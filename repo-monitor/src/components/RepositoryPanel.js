@@ -48,7 +48,7 @@ let RepositoryPanel = ({id, request, period, stats, index, setStats, avgStat, sh
                 let requestUrl = getUrl(id, request)
                 getRepoStat(requestUrl)
         }
-        
+    // eslint-disable-next-line
     }, [request, period, id])
 
     // When a repositories id is changed, reset it
@@ -62,7 +62,7 @@ let RepositoryPanel = ({id, request, period, stats, index, setStats, avgStat, sh
     useEffect(() => {
         stats[index] = stat
         setStats(stats)
-    }, [stat, setStat])
+    }, [stat, setStat, stats, setStats, index])
 
 
     let getRepoName = async (id) => {
@@ -189,7 +189,7 @@ let RepositoryPanel = ({id, request, period, stats, index, setStats, avgStat, sh
     }
 
     let getColour = (stat, avg, request) => {
-        if (avg ==0) avg = 1
+        if (avg === 0) avg = 1
         let delta = (stat/avg) - 1
         
         // Higher days since last commit is bad, so reverse colouring
@@ -218,7 +218,7 @@ let RepositoryPanel = ({id, request, period, stats, index, setStats, avgStat, sh
     return (
         <Link to={`/repository/${id}`} className='repo-title' >
         
-            <div className="card animate" id={showHeaders? "card-headers-on" : "card-headers-off" }>
+            <div className="card animate" id={showHeaders? "card-headers-on" : "card-headers-off" } key={`repository${index}`}>
 
                 <div id={
                     // Show colour unless stat is null or request is for pipeline

@@ -15,9 +15,8 @@ let RepositoryStat = ( {stat, request} ) => {
                 // Stat is a number (Not pipeline)
                 stat !== null && !Number.isNaN(stat) ? 
                     
-                    <div className="animate">
-                        {stat}    
-                    </div>
+                    
+                        <div className="statistic animate">{stat}</div>
 
                 // Stat hasn't loaded display loading    
                 : <span className="loader"></span> 
