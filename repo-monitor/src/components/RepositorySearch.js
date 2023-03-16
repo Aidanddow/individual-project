@@ -24,7 +24,6 @@ let RepositorySearch = ( {gridRepos, setGridRepos} ) => {
         let data = await response.json()
 
         data.forEach(proj => {
-            console.log("ID: " + proj.id)
             return proj.id
         })
 
@@ -36,11 +35,8 @@ let RepositorySearch = ( {gridRepos, setGridRepos} ) => {
         setResults([])
         setLoadingResults(true)
         let newRepos = await searchRepos(searchTerm)
-        console.log("REPOS: " + newRepos)
         setResults([...newRepos]) 
         setLoadingResults(false)
-        
-        console.log("REPOS: " + results)
     }
 
     let handleInputChange = (event) => {
@@ -60,8 +56,6 @@ let RepositorySearch = ( {gridRepos, setGridRepos} ) => {
     }
 
     let addAll = () => {
-        console.log("IDDSSSSSS: ", results)
-        
         setGridRepos([...gridRepos, ...results.map(result => result.id.toString())])
     }
 

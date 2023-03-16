@@ -123,7 +123,6 @@ let GridView = () => {
     }
 
     let sortRepos = async (alg) => {
-        console.log("REPOS BEFORE: ", repos.map((id, index) => stats[index]))
         
         let sortedRepos = [...repos]
             .map((id, index) => [id, stats[index] ? stats[index]: 0] )
@@ -131,7 +130,6 @@ let GridView = () => {
 
         setStats( (stats) => sortedRepos.map(a => a[1]))
         setRepos( (repos) => sortedRepos.map(a => a[0]))
-        console.log("REPOS AFTER: ", sortedRepos.map(a => a[0]))
     }
 
     let sortAsc = (a,b) => {

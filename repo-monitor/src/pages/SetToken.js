@@ -40,7 +40,6 @@ let SetToken = () => {
     let handleSubmittedToken = async (token) => {
         setError(false)
         setValidating(true)
-        console.log("Validating")
 
         let authenticated = await validateToken(token)
         

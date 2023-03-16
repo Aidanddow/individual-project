@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { fetchData, getJsonData, getUrl, fetchUrl, fetchSearch, getDaysSinceCommit } from "../utils.js"
+import { getJsonData, getDaysSinceCommit } from "../utils.js"
 
 
 let Developer = class {
@@ -15,56 +15,43 @@ let Developer = class {
     addCommit = (commit) => {
         this.commits ++
         
-        if (this.lastCommitDate == ""){
+        if (this.lastCommitDate === ""){
             this.lastCommitDate = commit.created_at
         }
         
         return this
-        // "2022-04-04T11:06:11.000+01:00"
     }
-
-    // get getName() {
-    //     return this.name
-    // }
 
     getLastCommitDate = () => {
         return new Date(this.lastCommitDate)
     }
-
-    // get numCommits() {
-    //     return this.commits
-    // }
 }
 
 let Repository = () => {
 
     const { id } = useParams()
-    let [loading, setLoading] = useState(true)
+    let [loadingCommits, setLoadingCommits] = useState(true)
     let [repoInfo, setRepoInfo] = useState([])
     let [commits, setCommits] = useState([])
-    let [commitsLoaded, setCommitsLoaded] = useState(false)
     let [issues, setIssues] = useState([])
-    let [curPage, setCurPage] = useState(0)
     let [developers, setDevelopers] = useState(new Map())
     
     useEffect(() => {
         /* Defining an async function allows await to be used in useEffect */
         let r = async () => {
             getRepoIssues(id)
-            console.log("I've been called")
             getRepoInfo(id)
             await getRepoCommits(id)
-            setLoading(false)
+            setLoadingCommits(false)
+            getDevelopers()
         }
 
         r()
-
-        // let d = new Developer("Aidan Dow")
-    }, [])
+    }, [id])
 
     useEffect(() => {
         getDevelopers()
-    }, [loading])
+    }, [loadingCommits])
 
     let getRepoInfo = async (id) => {
         let dataJson = await getJsonData(id, "")
@@ -74,25 +61,22 @@ let Repository = () => {
     let getRepoCommits = async (id) => {
         let data = await getJsonData(id, `repository/commits?with_stats=yes&page=1&per_page=100`)
         let newData
-        let i = 2
+        let page = 2
         
         do { 
             data = data.concat(newData)
             setCommits([...data])
 
-            i++
-            newData = await getJsonData(id, `repository/commits?with_stats=yes&page=${i}`)
+            page++
+            newData = await getJsonData(id, `repository/commits?with_stats=yes&page=${page}`)
             
         } while (!(Object.keys(newData).length === 0))
 
         setCommits(data.filter((commit) => commit != null))
     }
 
-
     let getRepoIssues = async (id) => {
-        console.log("get issues")
         let data = await getJsonData(id, `issues?state=opened&page=1&per_page=20&state=opened`)
-        console.log("DATAAA: " )
         console.table(data)
         let newData
         let i = 2
@@ -116,17 +100,13 @@ let Repository = () => {
             let dev = commit.author_name
             
             if (!devsMap.has(dev)) {
-                let a = new Developer( dev );
-                devsMap.set(dev, a)
+                devsMap.set(dev, new Developer( dev ))
             }
 
             let d = devsMap.get(dev)
-            console.log("DEV: ", d)
             d.addCommit(commit)
         })
-
         setDevelopers(devsMap)
-        console.log("Devsmap: ", devsMap)
     }
 
     let formatTime = (timeStr) => {
@@ -146,7 +126,7 @@ let Repository = () => {
             </div>
 
             <div className="col-2">
-                <a href={repoInfo.http_url_to_repo} target="_blank" className="btn btn-outline-primary view-gitlab-btn">
+                <a href={repoInfo.http_url_to_repo} target="_blank" className="btn btn-outline-primary view-gitlab-btn" rel="noreferrer">
                     View on GitLab
                 </a>
             </div>
@@ -165,7 +145,7 @@ let Repository = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {loading ? 
+                    {loadingCommits ? 
                         <tr><td>Loading...</td><td></td><td></td><td></td></tr> : 
                 
                     [...developers.keys()].sort()
@@ -205,7 +185,7 @@ let Repository = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {loading ? 
+                    {loadingCommits ? 
                         <tr><td>Loading...</td></tr> : 
                         <tr><td>{issues.length}</td></tr>
                     }
@@ -260,11 +240,6 @@ let Repository = () => {
                 </tbody>
                 
             </table>
-        
-        {/* {nextPage && 
-            <button onClick={() => setCurPage(curPage + 1)} className="btn btn-outline-primary">Load More</button>
-        } */}
-               
         </div>
     )
 }

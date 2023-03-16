@@ -48,7 +48,7 @@ let RepositoryPanel = ({id, request, period, stats, index, setStats, avgStat, sh
                 let requestUrl = getUrl(id, request)
                 getRepoStat(requestUrl)
         }
-    // eslint-disable-next-line
+
     }, [request, period, id])
 
     // When a repositories id is changed, reset it
@@ -133,7 +133,6 @@ let RepositoryPanel = ({id, request, period, stats, index, setStats, avgStat, sh
         let data = await getJsonData(id, "pipelines")
 
         if (data.length === 0) {
-            console.log("NO DATA")
             setStat("no-pipeline")
         } else {
             if (data[0].status === "failed") {

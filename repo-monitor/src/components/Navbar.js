@@ -23,7 +23,6 @@ let Navbar = () => {
 
             // If navigating to "/" redirect to first stored grid
             if (window.location.pathname === "/") {
-                console.log("YASSSS")
                 navigate(`/grid/${gridNames[0]}`)
             }
         }
