@@ -50,3 +50,14 @@ The automated unit tests for the application can be run using:
 ```
 $ npm test
 ```
+
+
+## Authenticating with GitLab
+In order to use the application, you must generate a GitLab Personal Access Token (PAT). This can be done by using the following steps:
+1. Go to https://stgit.dcs.gla.ac.uk
+2. Click on your profile in the top right, then navigate to Preferences
+3. In the left sidebar choose "Access Tokens"
+4. Enter a name and expiration date for your token
+5. Grant access to "api", "read_api", "read_user", "read_repository" and "read_registry"
+6. Click "Create Personal Access Token"
+7. This will create a PAT. Make sure to copy the token and keep it safe. 
