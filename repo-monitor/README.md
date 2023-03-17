@@ -6,7 +6,7 @@ Repo-Monitor is a web-application designed to streamline the process of monitori
 
 <figure class="image" align="center">
 
-<img src="./readme-images/grid-view.png" style="width: 60%"/>
+<img src="../readme-images/grid-view.png" style="width: 60%"/>
 <figcaption>A Screenshot of Repo-Monitor showing a grid of repositories</figcaption>
 </figure>
 
