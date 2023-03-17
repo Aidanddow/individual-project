@@ -15,7 +15,7 @@ Repo-Monitor is a web-application designed to streamline the process of monitori
 Repo-Monitor is built using React JS. It uses the GitLab REST API to gather data on repositories. Documentation for the API can be found [here](https://docs.gitlab.com/ee/api/api_resources.html)
 
 
-## Running Locally
+## Run Instructions
 
 As Repo-Monitor is built with [React JS](https://reactjs.org), it uses Node Package Manager (npm). In order to run this, you will need to install [Node js](https://nodejs.org/en/).
 
@@ -38,3 +38,15 @@ $ npm start
 
 The application will now be up and running on [localhost:3000](http://localhost:3000)
 
+
+### Production Build
+An optimised production build can be created using
+```
+$ npm run build
+```
+
+### Testing
+The automated unit tests for the application can be run using: 
+```
+$ npm test
+```
