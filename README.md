@@ -5,7 +5,7 @@
 This is the repository for my Honours Project, Repo-Monitor. Repo-Monitor is a web-application intended to make it easy to monitor progress across several software repositories at the same time.
 
 ### Project Structure
-* `repo-monitor` contains the source code for the project
+* `repo-monitor` contains the source code for the project, with a README detailing run instructions
 * `research` contains notebooks and files which were used to research the project
 * `dissertation` contains the files for the dissertation
 * `meetings` contains minutes from supervisor meetings
