@@ -22,6 +22,7 @@ table {
 
 .search-logo {
   height: 18px;
+  width: 18px;
 }
 
 #dropdown:hover {
@@ -466,6 +467,7 @@ table {
 
 .profile-picture {
   height:40px;
+  width: 40px;
 
   border: 1px solid white;
 }
